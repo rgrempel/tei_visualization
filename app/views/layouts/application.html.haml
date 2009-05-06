@@ -1,0 +1,19 @@
+%html
+  %head
+    %title TEI Visualization
+
+    - isomorphicDir = "javascripts/isomorphic"
+
+    %script
+      = "var isomorphicDir = '/#{isomorphicDir}/';"
+
+    - %w( ISC_Core.js ISC_Foundation.js ISC_Containers.js ISC_Grids.js ISC_Forms.js ISC_DataBinding.js ).each do |js|
+      = javascript_include_tag "/#{isomorphicDir}/system/modules/#{js}"
+
+    = javascript_include_tag "/#{isomorphicDir}/skins/TreeFrog/load_skin.js"
+
+    = javascript_include_tag "/javascripts/application.js"
+
+    = stylesheet_link_tag :all
+
+  %body
