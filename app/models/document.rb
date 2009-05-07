@@ -28,13 +28,27 @@ class Document < ActiveRecord::Base
 
   attr_accessible :original_url, :title, :contents
 
-  before_validation :download_from_original_url_if_necessary
+  before_validation :download_from_original_url_if_necessary, :check_title
+  
   validates_attachment_presence :contents
   validates_attachment_thumbnails :contents
+
+  validates_presence_of :title
 
   def download_from_original_url_if_necessary
     self.download_from_original_url unless self.contents.file?
     true
+  end
+
+  def check_title
+    if self.title.blank?
+      doc = Nokogiri::XML(self.contents.to_file.open)
+      titleNode = doc.xpath(
+        '/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title',
+        'tei' => 'http://www.tei-c.org/ns/1.0'
+      ).first
+      self.title = titleNode.content if titleNode
+    end
   end
 
   # The support for downloading from url's is adapted from
