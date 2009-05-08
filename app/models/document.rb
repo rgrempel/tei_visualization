@@ -33,8 +33,6 @@ class Document < ActiveRecord::Base
   validates_attachment_presence :contents
   validates_attachment_thumbnails :contents
 
-  validates_presence_of :title
-
   def download_from_original_url_if_necessary
     self.download_from_original_url unless self.contents.file?
     true
@@ -47,8 +45,9 @@ class Document < ActiveRecord::Base
         '/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title',
         'tei' => 'http://www.tei-c.org/ns/1.0'
       ).first
-      self.title = titleNode.content if titleNode
+      self.title = titleNode ? titleNode.content : self.contents_file_name
     end
+    true
   end
 
   # The support for downloading from url's is adapted from
