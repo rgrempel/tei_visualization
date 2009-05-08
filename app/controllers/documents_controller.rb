@@ -40,7 +40,7 @@ class DocumentsController < ApplicationController
   end
 
   def upload
-    @jsonp = params[:jsonp]
+    @callback = params[:callback]
     @response = {}
 
     render :layout => false

@@ -3,33 +3,19 @@
 isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
   encoding: "multipart",
   canSubmit: true,
-  initWidget: function() {
-    this.originalAction = this.action;
-    this.Super("initWidget", arguments);
-  },
+
   saveFileData: function(callback) {
     if (!this.validate()) return false;
-    this.xProgressID = String (new Date().getTime() * Math.random());
-    var connector = (this.originalAction.indexOf('?') >= 0) ? "&" : "?";
-    this.setAction(this.originalAction + connector + "X-Progress-ID=" + this.xProgressID +
-        "&jsonp=top['" + this.getID() + "']._saveFileDataCallback")
-    this.submitForm();
-    this.delayCall("showProgressWindow");
+    isc.UploadProgressWindow.create({
+      form: this,
+      callback: callback
+    }).show();
   },
-  _saveFileDataCallback: function(dsResponse) {
-    isc.say("hi");
-    if (this.progressWindow) this.progressWindow.hide();
-  },
-  showProgressWindow: function() {
-    if (!this.progressWindow) this.progressWindow = isc.UploadProgressWindow.create();
-    this.progressWindow.startMonitoring(this.xProgressID);
-    this.progressWindow.show();
-  },
-  getInnerHTML: function() {
-    this.target = this.getID() + "_callbackIframe";
-    var iframe = "<iframe style='position: absolute; visibility: hidden; top: -1000px' " +
-                 "name='" + this.target + "'></iframe>";
-    return this.Super("getInnerHTML", arguments) + iframe;
+
+  setTarget: function(target) {
+    this.target = target;
+    var form = this.getForm();
+    if (form) form.target = target;
   }
 });
 
@@ -38,11 +24,58 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
   autoCenter: true,
   width: 300,
   height: 150,
+  showCloseButton: false,
+  showFooter: false,
+  xProgressID: null,
+  form: null,
+  callback: null,
+  data: {
+    state: "starting"
+  },
+
   initWidget: function() {
     this.Super("initWidget", arguments);
 
+    if (!this.form.originalAction) this.form.originalAction = this.form.action;
+
+    this.xProgressID = String (new Date().getTime() * Math.random());
+    var connector = (this.form.originalAction.indexOf('?') >= 0) ? "&" : "?";
+    this.form.setAction(this.form.originalAction + connector + "X-Progress-ID=" + this.xProgressID +
+        "&callback=top['" + this.getID() + "']._saveFileDataCallback");
+
+    this.target = this.getID() + "_callbackIframe";
+    this.form.setTarget (this.target);
+    this.addItem(isc.Canvas.create({
+      height: 10,
+      width: 10,
+      contents: "<iframe style='position: absolute; visibility: hidden; top: -1000px;' name='" + this.target + "'></iframe>"
+    }));
+  },
+
+  show: function() {
+    this.Super("show", arguments);
+    if (!this.shown) {
+      this.shown = true;
+      this.form.delayCall("submitForm");
+      this.delayCall("initProgress");
+    }
+  },
+
+  _saveFileDataCallback: function(response) {
+    if (this.callback) this.fireCallback(this.callback, "dsResponse,data,dsRequest", [null, null, null]);
+    if (this.timedUpdate) {
+      Timer.clear(this.timedUpdate);
+      this.timedUpdate = null;
+    }
+    this.markForDestroy();
+  },
+
+  initProgress: function(){
     this.progressRS = isc.ResultSet.create({
       dataSource: "uploadprogress",
+      criteria: {
+        "X-Progress-ID": this.xProgressID
+      },
       progressWindow: this,
       dataArrived: function(startRow, endRow) {
         this.progressWindow.handleDataArrived(startRow, endRow);
@@ -54,20 +87,18 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
       height: 20
     });
     this.addItem(this.progressbar);
-  },
-  startMonitoring: function(xProgressID) {
-    this.data = null;
-    this.progressRS.setCriteria({
-      "X-Progress-ID": xProgressID
-    }),
+
     this.updateProgress();
   },
+
   updateProgress: function() {
-    if (!this.data || this.data.state == "starting" || this.data.state == "uploading") {
+    this.timedUpdate = null;
+    if (this.data.state == "starting" || this.data.state == "uploading") {
       this.progressRS.invalidateCache();
       this.progressRS.get(0);
     }
   },
+
   handleDataArrived: function(startRow, endRow) {
     if (startRow == 0 && endRow >= 0) {
       this.data = this.progressRS.get(0);
@@ -78,7 +109,7 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
       } else {
         return;
       }
-      this.delayCall("updateProgress", [], 2000);
+      this.timedUpdate = this.delayCall("updateProgress", [], 2000);
     }
   }
 });
