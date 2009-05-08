@@ -4,9 +4,10 @@ isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
   encoding: "multipart",
   canSubmit: true,
   initWidget: function() {
+    this.xProgressID = String (new Date().getTime() * Math.random());
     this.originalAction = this.action;
     var connector = (this.originalAction.indexOf('?') >= 0) ? "&" : "?";
-    this.action = this.originalAction + connector + "X-Progress-ID=" + this.getID() + 
+    this.action = this.originalAction + connector + "X-Progress-ID=" + this.xProgressID +
         "&jsonp=top.window['" + this.getID() + "']._saveFileDataCallback"
     this.Super("initWidget", arguments);
   },
@@ -17,10 +18,11 @@ isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
   },
   _saveFileDataCallback: function(dsResponse) {
     isc.say("hi");
+    if (this.progressWindow) this.progressWindow.hide();
   },
   showProgressWindow: function() {
     if (!this.progressWindow) this.progressWindow = isc.UploadProgressWindow.create({
-      xProgressID: this.getID()
+      xProgressID: this.xProgressID
     });
     this.progressWindow.show();
   },
@@ -36,15 +38,47 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
   title: "Upload Progress",
   autoCenter: true,
   width: 300,
-  height: 200,
+  height: 150,
   initWidget: function() {
     this.Super("initWidget", arguments);
+
+    this.progressRS = isc.ResultSet.create({
+      dataSource: "uploadprogress",
+      criteria: {
+        "X-Progress-ID": this.xProgressID
+      },
+      progressWindow: this,
+      dataArrived: function(startRow, endRow) {
+        this.progressWindow.handleDataArrived(startRow, endRow);
+      }
+    });
 
     this.progressbar = isc.Progressbar.create({
       top: 10,
       height: 20
     });
     this.addItem(this.progressbar);
+
+    this.updateProgress();
+  },
+  updateProgress: function() {
+    if (!this.data || this.data.state == "starting" || this.data.state == "uploading") {
+      this.progressRS.invalidateCache();
+      this.progressRS.get(0);
+    }
+  },
+  handleDataArrived: function(startRow, endRow) {
+    if (startRow == 0 && endRow >= 0) {
+      this.data = this.progressRS.get(0);
+      if (this.data.state == "uploading") {
+        this.progressbar.setPercentDone(this.data.received * 100 / this.data.size);
+      } else if (this.data.state == "starting") {
+        this.progressbar.setPercentDone(0);
+      } else {
+        return;
+      }
+      this.delayCall("updateProgress", [], 2000);
+    }
   }
 });
 
@@ -53,6 +87,7 @@ isc.XJSONDataSource.create({
   dataURL: "/uploadprogress",
   recordXPath: "/",
   callbackParam: "callback",
+  showPrompt: false,
   fields: [
     {name: "state", type: "text"},
     {name: "received", type: "integer"},
@@ -139,7 +174,7 @@ isc.DataSource.addClassMethods({
 
   // loadSchema - attempt to load a remote dataSource schema from the server.
   // This is supported as part of the SmartClient server functionality
-  // This is based on code from David Johnson ... 
+  // This is based on code from David Johnson ...
   // see http://smartclientexperience.blogspot.com/2008/10/datasource-dependencies.html
 
   loadSchema: function(name, callback, context) {
