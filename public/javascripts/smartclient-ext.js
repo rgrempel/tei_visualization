@@ -4,15 +4,15 @@ isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
   encoding: "multipart",
   canSubmit: true,
   initWidget: function() {
-    this.xProgressID = String (new Date().getTime() * Math.random());
     this.originalAction = this.action;
-    var connector = (this.originalAction.indexOf('?') >= 0) ? "&" : "?";
-    this.action = this.originalAction + connector + "X-Progress-ID=" + this.xProgressID +
-        "&jsonp=top.window['" + this.getID() + "']._saveFileDataCallback"
     this.Super("initWidget", arguments);
   },
   saveFileData: function(callback) {
     if (!this.validate()) return false;
+    this.xProgressID = String (new Date().getTime() * Math.random());
+    var connector = (this.originalAction.indexOf('?') >= 0) ? "&" : "?";
+    this.setAction(this.originalAction + connector + "X-Progress-ID=" + this.xProgressID +
+        "&jsonp=top['" + this.getID() + "']._saveFileDataCallback")
     this.submitForm();
     this.delayCall("showProgressWindow");
   },
@@ -21,9 +21,8 @@ isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
     if (this.progressWindow) this.progressWindow.hide();
   },
   showProgressWindow: function() {
-    if (!this.progressWindow) this.progressWindow = isc.UploadProgressWindow.create({
-      xProgressID: this.xProgressID
-    });
+    if (!this.progressWindow) this.progressWindow = isc.UploadProgressWindow.create();
+    this.progressWindow.startMonitoring(this.xProgressID);
     this.progressWindow.show();
   },
   getInnerHTML: function() {
@@ -44,9 +43,6 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
 
     this.progressRS = isc.ResultSet.create({
       dataSource: "uploadprogress",
-      criteria: {
-        "X-Progress-ID": this.xProgressID
-      },
       progressWindow: this,
       dataArrived: function(startRow, endRow) {
         this.progressWindow.handleDataArrived(startRow, endRow);
@@ -58,7 +54,12 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
       height: 20
     });
     this.addItem(this.progressbar);
-
+  },
+  startMonitoring: function(xProgressID) {
+    this.data = null;
+    this.progressRS.setCriteria({
+      "X-Progress-ID": xProgressID
+    }),
     this.updateProgress();
   },
   updateProgress: function() {
