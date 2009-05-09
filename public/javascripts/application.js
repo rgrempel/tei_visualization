@@ -56,6 +56,18 @@ isc.TEI.addProperties({
     this.navigation.draw();
   },
 
+  doOpenDocument: function(doc) {
+    if (this.teiDocument == doc) return;
+    if (this.teiDocument) {
+      this.navigation.removeMember(this.teiDocument);
+      this.teiDocument.markForDestroy();
+    }
+    this.teiDocument = isc.TEIDocument.create({
+      record: doc
+    });
+    if (this.teiDocument) this.navigation.addMember(this.teiDocument);
+  },
+
   newDocumentWindow: null,
 
   doNewDocument: function() {
@@ -63,6 +75,106 @@ isc.TEI.addProperties({
       this.newDocumentWindow = isc.NewDocumentWindow.create();
     }
     this.newDocumentWindow.show();
+  }
+});
+
+isc.defineClass("XSLTDocument");
+isc.XSLTDocument.addClassProperties({
+  urls: {
+    projects: "/xslt/projects.xsl",
+    main: "/xslt/main.xsl",
+    common: "/xslt/common.xsl",
+    nameTree: "/xslt/names.xsl",
+    interpretationTree: "/xslt/interpretations.xsl",
+    nameKwic: "/xslt/names-kwic.xsl",
+    nameDialog: "/xslt/names-dialog.xsl",
+    interpretationKwic: "/xslt/interpretations-kwic.xsl",
+    northPanel: "/xslt/north-panel.xsl",
+    tocTree: "/xslt/toc.xsl",
+    teiHeader: "/xslt/tei-header.xsl",
+    namesCount: "/xslt/names-count.xsl",
+    dialogCount: "/xslt/dialog-count.xsl",
+    interpretationCount: "/xslt/interpretation-count.xsl",
+    everythingCount: "/xslt/everything-count.xsl",
+    termList: "/xslt/term-list.xsl",
+    indexKwic: "/xslt/index-kwic.xsl",
+    glossary: "/xslt/glossary.xsl",
+    notes: "/xslt/notes.xsl",
+    interpNames: "/xslt/interp-names.xsl",
+    interpAllNames: "/xslt/interp-all-names.xsl",
+    interpInterpXref: "/xslt/interp-interp-xref.xsl",
+    interpNamesProximity: "/xslt/interp-names-proximity.xsl"
+  },
+
+  sheets: {},
+
+  loadSheet: function(name, callback) {
+    var self = isc.XSLTDocument;
+    if (self.sheets[name]) {
+      self.fireCallback(callback, "xmlDoc", [self.sheets[name]]);
+    } else if (self.urls[name]) {
+      isc.XMLTools.loadXML(self.urls[name], function(xmlDoc, xmlText) {
+        self.sheets[name] = xmlDoc;
+        self.fireCallback(callback, "xmlDoc", [xmlDoc]);
+      }, {bypassCache: false});
+    }
+  }
+});
+
+isc.defineClass("TEIDocument", isc.VLayout).addProperties({
+  record: null,
+  xmlDocument: null,
+
+  initWidget: function(){
+    this.Super("initWidget", arguments);
+
+    this.mainPanel = isc.XSLTFlow.create({
+      xsltName: "main",
+      width: "100%",
+      height: "100%"
+    });
+
+    if (this.record) {
+      isc.XMLTools.loadXML("/documents/" + this.record.id + ".tei", {target: this, methodName: "loadXMLReply"}, {bypassCache: false});
+    }
+
+    this.addMember(this.mainPanel);
+  },
+
+  loadXMLReply: function(xmlDoc, xmlText) {
+    this.xmlDocument = xmlDoc;
+    this.mainPanel.setXMLDocument(xmlDoc);
+  }
+});
+
+isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
+  xmlDocument: null,
+  xsltName: null,
+  xsltDocument: null,
+  overflow: "auto",
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    this.reload();
+    if (this.xsltName) {
+      isc.XSLTDocument.loadSheet(this.xsltName, {target: this, methodName: "setXSLTDocument"});
+    }
+  },
+
+  setXMLDocument: function(xmlDoc) {
+    this.xmlDocument = xmlDoc;
+    this.reload();
+  },
+
+  setXSLTDocument: function(xsltDoc) {
+    this.xsltDocument = xsltDoc;
+    this.reload();
+  },
+
+  reload: function() {
+    if (this.xmlDocument && this.xsltDocument) {
+      this.setContents(isc.XMLTools.transformNodes(this.xmlDocument, this.xsltDocument));
+    }
   }
 });
 
@@ -90,7 +202,7 @@ isc.defineClass("NewDocumentForm", isc.FileUploadForm).addProperties({
     {name: "contents", type: "upload"},
     {name: "space", type: "spacer", height: 10},
     {
-      name: "submit", 
+      name: "submit",
       type: "button",
       align: "center",
       colSpan: 2,
@@ -126,7 +238,7 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
         {name: "original_url"}
       ],
       doOpenSelection: function() {
-
+        isc.TEI.app.doOpenDocument (this.getSelectedRecord());
       },
       doDeleteSelection: function() {
         var grid = this;
