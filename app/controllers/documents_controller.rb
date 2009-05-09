@@ -51,6 +51,17 @@ class DocumentsController < ApplicationController
     render :template => "smartclient/show"
   end
 
+  def show
+    @record = Document.find params[:id]
+    if @record
+      respond_to do |format|
+        format.tei do
+          send_file @record.contents.path, :x_sendfile => true, :type => :xml
+        end
+      end
+    end
+  end
+
   def upload
     @callback = params[:callback]
     @record = Document.new(params)
