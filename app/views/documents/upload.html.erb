@@ -1,7 +1,13 @@
 <html>
   <head>
     <script>
-      <%= @callback %>(<%= @response.to_json %>)
+      <%= @callback %>(<%= {
+        :response => {
+          :status => @status,
+          :errors => @record.errors.to_smartclient,
+          :data => @record
+        }
+      }.to_json(@tojson_options || {}) %>)
     </script>
   </head>
   <body>

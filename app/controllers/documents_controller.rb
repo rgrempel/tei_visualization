@@ -14,7 +14,7 @@ class DocumentsController < ApplicationController
 
   def index
     options = {
-      :order => "title DESC"
+      :order => "title"
     }
 
     if params.has_key?(:_startRow)
@@ -41,7 +41,8 @@ class DocumentsController < ApplicationController
 
   def upload
     @callback = params[:callback]
-    @response = {}
+    @record = Document.new(params)
+    @status = @record.save ? 0 : -4
 
     render :layout => false
   end

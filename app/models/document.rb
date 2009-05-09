@@ -39,7 +39,7 @@ class Document < ActiveRecord::Base
   end
 
   def check_title
-    if self.title.blank?
+    if self.title.blank? && self.contents.file?
       doc = Nokogiri::XML(self.contents.to_file.open)
       titleNode = doc.xpath(
         '/tei:TEI/tei:teiHeader/tei:fileDesc/tei:titleStmt/tei:title',

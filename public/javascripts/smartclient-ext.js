@@ -2,13 +2,13 @@
 
 isc.defineClass("FileUploadForm", "DynamicForm").addProperties({
   encoding: "multipart",
-  canSubmit: true,
 
-  saveFileData: function(callback) {
+  saveFileData: function(callback, requestProperties) {
     if (!this.validate()) return false;
     isc.UploadProgressWindow.create({
       form: this,
-      callback: callback
+      callback: callback,
+      requestProperties: requestProperties
     }).show();
   },
 
@@ -37,6 +37,7 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
     this.Super("initWidget", arguments);
 
     if (!this.form.originalAction) this.form.originalAction = this.form.action;
+    if (!this.requestProperties) this.requestProperties = {};
 
     this.xProgressID = String (new Date().getTime() * Math.random());
     var connector = (this.form.originalAction.indexOf('?') >= 0) ? "&" : "?";
@@ -56,17 +57,71 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
     this.Super("show", arguments);
     if (!this.shown) {
       this.shown = true;
-      this.form.delayCall("submitForm");
+
+      // Now, we're going to call into the saveData() code path on the DynamicForm.
+      // But, we want to use a custom way of contacting the server ... via a form submission to our hidden iframe,
+      // with the JSONP callback. So, we specify a "clientCustom" protocal on the request ... this allows SC to
+      // set everything up the way it expects, and then lets us do the actual communication
+      // The way we implement our protocol is through transformRequest on the DataSource. Since JavaScript is
+      // non-threaded, and we won't be async until after transformRequest, we can do some magic here ...
+      var ds = isc.DataSource.get(this.form.dataSource);
+      var progressTracker = this;
+
+      var bindings = {
+        add: ds.getOperationBinding("add"),
+        update: ds.getOperationBinding("update")
+      };
+
+      var oldProtocols = {
+        add: bindings.add.dataProtocol,
+        update: bindings.update.dataProtocol
+      };
+
+      bindings.add.dataProtocol = "clientCustom";
+      bindings.update.dataProtocol = "clientCustom";
+
+      var oldDataFormat = ds.dataFormat;
+
+      // We save the current transformRequest method on the dataSource, and substitute (temporarily) a version that
+      // does what we want ...
+      var oldTransformRequest = ds.transformRequest;
+      ds.transformRequest = function(dsRequest) {
+        // We inject the requestId into the parent context so that we'll have it for the callback ... isn't Javascript fun?
+        progressTracker.requestId = dsRequest.requestId;
+        // Then, we just get the form to submit itself in the usual way ...
+        progressTracker.form.submitForm();
+      }
+
+      // Now, this is what actually triggers the code we just wrote ...
+      this.form.saveData(this.callback, this.requestProperties);
+
+      // And now we undo the magic
+      ds.transformRequest = oldTransformRequest;
+      bindings.add.dataProtocol = oldProtocols.add;
+      bindings.update.dataProtocol = oldProtocols.update;
+
       this.delayCall("initProgress");
     }
   },
 
   _saveFileDataCallback: function(response) {
-    if (this.callback) this.fireCallback(this.callback, "dsResponse,data,dsRequest", [null, null, null]);
     if (this.timedUpdate) {
       Timer.clear(this.timedUpdate);
       this.timedUpdate = null;
     }
+
+    // Now we tell the dataSource to get snappy
+    var ds = isc.DataSource.get(this.form.dataSource);
+    var oldTransformResponse = ds.transformResponse;
+    // the response is fine ... just return it
+    ds.transformResponse = function(dsResponse, dsRequest, data) {
+      return dsResponse;
+    };
+
+    ds.processResponse(this.requestId, response.response);
+
+    ds.transformResponse = oldTransformResponse;
+
     this.markForDestroy();
   },
 
