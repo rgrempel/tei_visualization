@@ -198,6 +198,30 @@ isc.defineClass("GridButtonNew", "Button").addProperties({
   }
 });
 
+// This is a button that does a "delete" action on selected
+// items in a grid.
+
+isc.defineClass("GridButtonDelete", "Button").addProperties({
+  title: "Delete",
+  target: null,
+  action: function() {
+    if (!this.target) return;
+    this.target.doDeleteSelection();
+  },
+  setTarget: function(grid) {
+    if (this.target) this.ignore(this.target, "selectionChanged");
+    this.target = grid;
+    if (this.target) this.observe(this.target, "selectionChanged", "observer.handleSelectionChanged()");
+  },
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    if (this.target) this.setTarget(this.target);
+  },
+  handleSelectionChanged: function() {
+    this.setDisabled(!this.target.anySelected());
+  }
+});
+
 // This is a button that does an "open" action on selected
 // items in a grid.
 

@@ -95,6 +95,12 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
       doOpenSelection: function() {
 
       },
+      doDeleteSelection: function() {
+        var grid = this;
+        this.getSelection().map(function(record) {
+          grid.removeData(record);
+        });
+      },
       doNew: function() {
         isc.TEI.app.doNewDocument();
       }
@@ -106,6 +112,9 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
           target: this.grid
         }),
         isc.GridButtonOpen.create({
+          target: this.grid
+        }),
+        isc.GridButtonDelete.create({
           target: this.grid
         })
       ]

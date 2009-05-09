@@ -39,6 +39,18 @@ class DocumentsController < ApplicationController
     render :template => "smartclient/index"
   end
 
+  def destroy
+    @record = Document.find params[:id]
+    if @record
+      @record.destroy
+      @status = 0
+    else
+      @status = -1
+    end
+
+    render :template => "smartclient/show"
+  end
+
   def upload
     @callback = params[:callback]
     @record = Document.new(params)
