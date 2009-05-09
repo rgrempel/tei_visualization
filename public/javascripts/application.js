@@ -12,15 +12,48 @@ isc.TEI.addProperties({
 
     isc.TEI.app = this;
 
-    this.list = isc.DocumentList.create({
+    this.documentList = isc.DocumentList.create({
       align: "center",
       width: "100%",
       height: "100%"
     });
+
+    this.documentWindow = isc.Window.create({
+      autoCenter: true,
+      title: "Document List",
+      width: 400,
+      height: 400,
+      items: [
+        this.documentList
+      ]
+    });
+
+    this.navigation = isc.VLayout.create({
+      width: "100%",
+      height: "100%",
+      members: [
+        isc.Toolbar.create({
+          width: "100%",
+          buttons: [
+            isc.Button.create({
+              autoFit: true,
+              title: "Show Document List",
+              action: function() {
+                isc.TEI.app.showDocumentList();
+              }
+            })
+          ]
+        })
+      ]
+    });
+  },
+
+  showDocumentList: function() {
+    this.documentWindow.show();
   },
 
   draw: function() {
-    this.list.draw();
+    this.navigation.draw();
   },
 
   newDocumentWindow: null,
