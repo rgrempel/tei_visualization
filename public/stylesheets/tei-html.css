@@ -1,0 +1,1227 @@
+/* Modified for HTML divs, with classes representing the TEI tags */
+
+div.said {
+    display: inline;
+}
+
+div.w {
+    display: inline;
+}
+
+/**
+   =============================================================
+  CSS2 specification for TEI in oXygen.
+  derived from stylesheet by
+  Author: Adrian Edwards (adrian_edwards@yahoo.com)
+  Date:   2000-04-19
+  edited by Sebastian Rahtz (sebastian.rahtz@oucs.ox.ac.uk)
+  2001-05-06
+  2003-08-29 start of new parent div resets child auto-count. kl
+  2003-11-06 list attr list-style-type was none, now disc. kl
+  2007-06  reworking for TEI P5 and oxygen
+  $LastChangedDate$, $LastChangedRevision$, $LastChangedBy$
+  =============================================================
+ */
+/* Use Times New Roman for default font */
+
+div.TEI {
+    display: block;
+}
+
+div.abbr {
+    display: inline;
+}
+
+div.add {
+    display: inline;
+    color: green;
+    background-color: inherit;
+    text-decoration: underline;
+}
+
+div.address {
+    display: block;
+    margin-top: 2em;
+    margin-left: 2em;
+    margin-right: 2em;
+    margin-bottom: 2em;
+}
+
+div.addrLine {
+    display: block;
+    white-space: nowrap;
+}
+
+div.anchor {
+    display: none;
+}
+
+div.argument {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.att {
+    display: inline;
+    font-family: sans-serif;
+    color: blue;
+    background-color: inherit;
+}
+
+div.att:before {
+    content: "@";
+}
+
+div.author {
+    display: inline;
+}
+
+div.back {
+    display: block;
+    border: thin black solid;
+    margin-top: 1em;
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+div.bibl {
+    display: inline;
+}
+
+div.argument > div.bibl, div.body > div.bibl, div.cit > div.bibl, div.div > div.bibl, div.div0 > div.bibl, div.div1 > div.bibl, div.div2 > div.bibl, div.div3 > div.bibl, div.div4 > div.bibl, div.div5 > div.bibl, div.div6 > div.bibl, div.div7 > div.bibl, div.epigraph > div.bibl, div.listBibl > div.bibl > div.bibl, div.taxonomy > div.bibl {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.biblFull {
+    display: inline;
+}
+
+div.argument > div.biblFull, div.body > div.biblFull, div.cit > div.biblFull, div.div > div.biblFull, div.div0 > div.biblFull, div.div1 > div.biblFull, div.div2 > div.biblFull, div.div3 > div.biblFull, div.div4 > div.biblFull, div.div5 > div.biblFull, div.div6 > div.biblFull, div.div7 > div.biblFull, div.epigraph > div.biblFull, div.listBibl > div.biblFull > div.biblFull, div.taxonomy > div.biblFull {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.biblScope {
+    display: inline;
+}
+
+div.imprint > div.biblScope {
+    display: block;
+}
+
+div.body {
+    margin-top: 5px;
+    margin-left: 10px;
+    display: block;
+    counter-reset: div1;
+}
+
+div.byline {
+    display: block;
+    font-style: italic;
+    margin-bottom: 0.5em;
+}
+
+div.category {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.catRef {
+    display: none;
+}
+
+div.cell {
+    display: table-cell;
+    border: 1px solid #EEEFEE;
+    padding: 3px;
+    color: inherit;
+    background-color:inherit;
+}
+
+div.cell[role='label'] {
+    color: inherit;
+    background-color: #BBBBBB;
+}
+
+div.change {
+    display: block;
+    margin-bottom: 1em;
+    margin-left: 2em;
+}
+
+div.cit {
+    display: inline;
+}
+
+div.argument > div.cit, div.body > div.cit, div.div > div.cit, div.div0 > div.cit, div.div1 > div.cit, div.div2 > div.cit, div.div3 > div.cit, div.div4 > div.cit, div.div5 > div.cit, div.div6 > div.cit, div.div7 > div.cit, div.epigraph > div.cit {
+    display: block;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+}
+
+div.classCode {
+    display: block;
+}
+
+div.elementSpec, div.macroSpec, div.classSpec {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.closer {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.code {
+    display: inline;
+    font-family: monospace;
+}
+
+div.corr {
+    display: inline;
+    color: green;
+    background-color: inherit;
+}
+
+div.creation {
+    display: block;
+}
+
+div.date {
+    display: inline;
+}
+
+div.change > div.date, div.publicationStmt > div.date {
+    display: block;
+    font-weight: bold;
+}
+
+div.dateline {
+    display: inline;
+}
+
+div.del {
+    display: inline;
+    color: red;
+    background-color: inherit;
+    text-decoration: line-through;
+}
+
+div.distributor {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.body > div.div {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div1;
+    counter-reset: div2;
+}
+
+div.body > div.div > div.div {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div2;
+    counter-reset: div3;
+}
+
+div.body > div.div > div.div > div.div {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div3;
+}
+
+div.div1 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div1;
+    counter-reset: div2;
+}
+
+div.div2 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div2;
+    counter-reset: div3;
+}
+
+div.div3 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div3;
+    counter-reset: div4;
+}
+
+div.div4 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div4;
+    counter-reset: div5;
+}
+
+div.div5 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div5;
+    counter-reset: div6;
+}
+
+div.div6 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div6;
+    counter-reset: div7;
+}
+
+div.div7 {
+    display: block;
+    margin-bottom: 1em;
+    counter-increment: div7;
+}
+
+div.divGen {
+    display: none;
+}
+
+div.docAuthor {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.byline div.docAuthor {
+    display: inline;
+}
+
+div.titlePage div.docAuthor {
+}
+
+div.titlePage div.docTitle {
+}
+
+div.edition {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.bibl div.edition {
+    display: inline;
+}
+
+div.editionStmt {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.editor {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.bibl div.editor {
+    display: inline;
+}
+
+div.eg {
+    font-family: monospace;
+    padding-top: 3mm;
+    padding-left: 4pt;
+    padding-bottom: 2pt;
+    display: block;
+    margin-top: 12pt;
+    margin-bottom: 12pt;
+    white-space: pre;
+    color: inherit;
+    background-color: #FFCC99;
+}
+
+div.argument > div.eg, div.body > div.eg, div.div > div.eg, div.div0 > div.eg, div.div1 > div.eg, div.div2 > div.eg, div.div3 > div.eg, div.div4 > div.eg, div.div5 > div.eg, div.div6 > div.eg, div.div7 > div.eg, div.epigraph > div.eg {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.emph {
+    display: inline;
+    font-style: italic;
+}
+
+div.epigraph {
+    display: block;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+div.extent {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.bibl div.extent {
+    display: inline;
+}
+
+div.graphic {
+    color: gray;
+    background-color: inherit;
+    content: "{" attr(url) "}";
+}
+
+div.figure {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.foreign {
+    display: inline;
+    font-style: italic;
+}
+
+div.formula {
+    display: inline;
+    font-style: italic;
+}
+
+div.front {
+    display: block;
+    margin-bottom: 1em;
+    padding-top: 0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+div.funder {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.gap {
+    display: none;
+}
+
+div.gap:after {
+    content: "[...]";
+    font-style: italic;
+}
+
+div.gi, div.tag {
+    display: inline;
+    font-family: sans-serif;
+    color: blue;
+    background-color: inherit;
+}
+
+div.tag:before, div.gi:before {
+    content: "<";
+}
+
+div.tag:after, div.gi:after {
+    content: ">";
+}
+
+div.gloss {
+    display: inline;
+}
+
+div.group {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.body > div.div > div.head {
+    display: block;
+    font-size: larger;
+    padding-top: 14px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    color: inherit;
+    background-color: #BBBBBB;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    margin-top: 1em;
+}
+
+div.body > div.div > div.div > div.head {
+    display: block;
+    padding-top: 14px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    color: inherit;
+    background-color: #BBBBBB;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    margin-top: 1em;
+}
+
+div.body > div.div > div.div > div.div > div.head {
+    display: block;
+    padding-top: 14px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    color: inherit;
+    background-color: #BBBBBB;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    margin-top: 1em;
+}
+
+div.div1 > div.head:before {
+    content: counter(div1) ". ";
+    color: black;
+    background-color: inherit;
+}
+
+div.div2 > div.head:before {
+    content: counter(div1) "." counter(div2) ". ";
+    color: black;
+    background-color: inherit;
+}
+
+div.div3 > div.head:before {
+    content: counter(div1) "." counter(div2) "." counter(div3) ". ";
+    color: black;
+    background-color: inherit;
+}
+
+div.body > div.div > div.head:before {
+/*    content: counter(div1) ". "; */
+    color: black;
+    background-color: inherit;
+}
+
+div.body > div.div > div.div > div.head:before {
+/*    content: counter(div1) "." counter(div2) ". "; */
+    color: black;
+    background-color: inherit;
+}
+
+div.body > div.div > div.div > div.div > div.head:before {
+/*    content: counter(div1) "." counter(div2) "." counter(div3) ". "; */
+    color: black;
+    background-color: inherit;
+}
+
+div.hi {
+    display: inline;
+    background-color:yellow;
+    color: black;
+}
+
+div.hi[rend] {
+    background-color: inherit;
+    color: inherit;
+}
+
+div.hi[rend="bold"] {
+    display: inline;
+    font-weight: bold;
+}
+
+div.hi[rend="italic"] {
+    display: inline;
+    font-style: italic;
+}
+
+div.hi[rend="it"] {
+    display: inline;
+    font-style: italic;
+}
+
+div.hi[rend="sc"] {
+    display: inline;
+    font-variant: small-caps;
+}
+
+div.hi[rend="sup"] {
+    display: inline;
+    vertical-align: super;
+    font-size: smaller;
+}
+
+div.hi[rend="sub"] {
+    display: inline;
+    vertical-align: sub;
+    font-size: smaller;
+}
+
+div.hi[rend="ul"] {
+    display: inline;
+    text-decoration: underline;
+}
+
+div.ident {
+    display: inline;
+    font-family: monospace;
+}
+
+div.idno {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.bibl div.idno {
+    display: inline;
+}
+
+div.imprint {
+    display: inline;
+}
+
+div.index {
+    display: none;
+}
+
+div.interp {
+    display: none;
+}
+
+div.interpGrp {
+    display: none;
+}
+
+div.list[type = "gloss"] div.item {
+    display: block;
+    margin-left: 1em;
+}
+
+div.list div.item {
+    display: list-item;
+    margin-left: 12pt;
+}
+
+div.item {
+    display: list-item;
+    margin-left: 12pt;
+}
+
+div.item[n]:before {
+    content: attr(n) ". ";
+    list-style: none;
+}
+
+/*
+   should there be space after the content?
+  And should default marker be suppressed
+  when there is an @n attribute? --DRS
+ */
+
+div.change div.item {
+    display: block;
+    margin-bottom: 0.5em;
+    margin-left: 1em;
+    margin-top: 0.5em;
+}
+
+div.keywords {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.kw {
+    display: inline;
+    font-style: italic;
+}
+
+div.l {
+    display: block;
+    white-space: nowrap;
+}
+
+div.label {
+    display: inline;
+    font-weight: bold;
+}
+
+div.Label {
+    display: inline;
+    font-weight : bold;
+    color : #2F4F4F;
+    background-color: inherit;
+}
+
+div.argument > div.label, div.body > div.label, div.div > div.label, div.div0 > div.label, div.div1 > div.label, div.div2 > div.label, div.div3 > div.label, div.div4 > div.label, div.div5 > div.label, div.div6 > div.label, div.div7 > div.label, div.epigraph > div.label {
+    display: block;
+    font-weight: bold;
+}
+
+div.langUsage {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.lb {
+    display: block;
+}
+
+div.lg {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.list {
+    display: block;
+    list-style-type: disc;
+    list-style-position: outside;
+    margin-bottom: 1em;
+    margin-left: 2em;
+    margin-top: 1em;
+}
+
+div.list[rend="runon"] {
+    display: inline;
+}
+
+div.list[type="bulleted"] {
+    list-style-type: disc;
+    list-style-position: outside;
+}
+
+div.list[type="unordered"] {
+    list-style-type: disc;
+    list-style-position: outside;
+}
+
+div.list[type="ordered"] {
+    list-style-type: decimal;
+    list-style-position: outside;
+}
+
+div.list[type="numbered"] {
+    list-style-type: decimal;
+    list-style-position: outside;
+}
+
+div.list[type="none"] {
+    list-style-type: none;
+}
+
+div.listBibl {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.mentioned {
+    display: inline;
+    font-style: italic;
+}
+
+div.milestone {
+    display: none;
+}
+
+div.name {
+    display: inline;
+}
+
+div.note {
+    display: block;
+    font-size: smaller;
+}
+
+div.note[n]:before {
+    content: attr(n);
+    vertical-align: super;
+}
+
+div.note[place="left"] {
+    float: left;
+}
+
+div.note[place="right"] {
+    float: right;
+}
+
+div.note[place="inline"], div.note[place="unspecified"] {
+    display: inline;
+}
+
+div.notesStmt {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.num {
+    display: inline;
+}
+
+div.opener {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.orig {
+    display: inline;
+}
+
+div.p {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.pb {
+    display: none;
+}
+
+div.pb:after {
+    content: attr(n);
+    font-weight: bold;
+    margin-bottom: 1em;
+    margin-top: 1em;
+    text-align: center;
+}
+
+div.principal {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.ptr {
+    color: navy;
+    text-decoration: underline;
+    background-color: inherit;
+}
+
+div.ptr:before {
+    background-color: inherit;
+    color: red;
+    content:"[" attr(target) "]";
+}
+
+div.publicationStmt {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.publisher {
+    display: inline;
+}
+
+div.imprint > div.publisher, div.publicationStmt > div.publisher {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.pubPlace {
+    display: inline;
+}
+
+div.imprint > div.pubPlace, div.publicationStmt > div.pubPlace {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.q {
+    display: inline;
+    quotes: '"' '"' "'" "'";
+    margin-top: 0em;
+    margin-left: 0em;
+    margin-right: 0em;
+    margin-bottom: 0em;
+}
+
+div.q[rend="display"], div.argument > div.q, div.body > div.q, div.cit > div.q, div.div > div.q, div.div0 > div.q, div.div1 > div.q, div.div2 > div.q, div.div3 > div.q, div.div4 > div.q, div.div5 > div.q, div.div6 > div.q, div.div7 > div.q, div.epigraph > div.q {
+    display: block;
+    margin-bottom: 0.5em;
+    margin-left: 3em;
+    margin-right: 3em;
+    quotes: none;
+}
+
+div.q:before {
+    content: open-quote;
+}
+
+div.q:after {
+    content: close-quote;
+}
+
+
+div.ref {
+    display: inline;
+    color: blue;
+    background-color: inherit;
+    cursor: pointer;
+}
+
+/*
+div.ref:before {
+    color: gray;
+    background-color: inherit;
+    text-decoration: underline;
+    content:'{' attr(target) '}';
+}
+*/
+
+div.reg {
+    display: inline;
+    font-style: italic;
+}
+
+div.rendition {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.resp {
+    display: inline;
+}
+
+div.respStmt {
+    display: block;
+}
+
+div.bibl div.respStmt {
+    display: inline;
+}
+
+div.rdg:before {
+    background-color: inherit;
+    content: "[" attr(wit) "] ";
+    color: red;
+}
+
+div.row {
+    display: table-row;
+}
+
+div.row[role='label'] {
+    color: inherit;
+    background-color: #BBBBBB;
+}
+
+div.rs {
+    display: inline;
+}
+
+div.s {
+    display: inline;
+}
+
+div.salute {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.samplingDecl {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.seg {
+    display: inline;
+}
+
+div.seriesStmt {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.sic {
+    display: inline;
+    color: red;
+    background-color: inherit;
+}
+
+div.sic:after {
+    content: " [sic]";
+}
+
+div.signed {
+    display: block;
+    text-align: right;
+}
+
+div.soCalled {
+    display: inline;
+    font-style: italic;
+    quotes: "'" "'";
+}
+
+div.soCalled:before {
+    content: open-quote;
+}
+
+div.soCalled:after {
+    content: close-quote;
+}
+
+div.sp {
+    display: block;
+    margin-bottom: 0.5em;
+    margin-left: 2em;
+}
+
+div.speaker {
+    display: inline;
+    font-weight: bold;
+}
+
+div.sponsor {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.stage {
+    display: inline;
+    font-style: italic;
+}
+
+div.table {
+    text-align: center;
+    display: table;
+    margin: 1em
+}
+
+div.table > div.head {
+    display:table-caption;
+    font-style: italic;
+    margin-bottom: 6pt;
+}
+
+div.tagUsage {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.taxonomy {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.term {
+    font-family: sans-serif;
+    color: blue;
+    background-color: inherit;
+    display: inline;
+}
+
+div.textClass {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.time {
+    display: inline;
+}
+
+div.title {
+    display: inline;
+}
+
+div.seriesStmt > div.title, div.titleStmt > div.title {
+}
+
+div.titlePage {
+    display: block;
+    border: thin black solid;
+    margin-bottom: 2em;
+    text-align: center;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+}
+
+div.titlePart {
+    display: block;
+}
+
+div.titleStmt {
+    font-size: large;
+    font-weight: bold;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+div.trailer {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.unclear {
+    display: inline;
+    color: silver;
+    background-color: inherit;
+    font-style: italic;
+}
+/* header-related material */
+
+div.teiHeader {
+    display: block;
+    color: silver;
+    background-color: rgb(251, 242, 234);
+    border: solid black 1pt;
+    margin-bottom: 2em;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+}
+
+div.titleStmt > div.author {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.authority {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.availability {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.fileDesc {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.sourceDesc {
+    display: block;
+    border: thin silver solid;
+    margin-bottom: 1em;
+    padding-top: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    padding-bottom: 1em;
+}
+
+div.revisionDesc {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.catDesc {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.encodingDesc {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.profileDesc {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.projectDesc {
+    display: block;
+    margin-bottom: 1em;
+}
+
+div.docDate {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.docImprint div.docDate {
+    display: inline;
+}
+
+div.docEdition {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.docImprint {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+div.docTitle {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+/* OUCS additions */
+
+div.Button {
+    font-family: monospace;
+    color: red;
+    font-weight: bold;
+    background-color: rgb(75%,75%,75%)
+}
+
+div.Value {
+    font-family: monospace;
+    color: rgb(255, 102, 0);
+    background-color: inherit;
+}
+
+div.Code {
+    font-family: monospace;
+    color: red;
+    background-color: inherit;
+}
+
+div.Field {
+    font-family: monospace;
+    color: red;
+    background-color: inherit;
+}
+
+div.Filespec {
+    font-family: monospace;
+    color: red;
+    background-color: inherit;
+}
+
+div.Input {
+    font-family: monospace;
+    color: green;
+    background-color: inherit;
+}
+
+div.Key {
+    font-family: monospace;
+    text-decoration: underline;
+    color: green;
+    background-color: inherit;
+}
+
+div.Link {
+    font-family: monospace;
+    color: green;
+    background-color: inherit;
+    text-decoration: underline;
+}
+
+div.Menu {
+    font-family: monospace;
+    color: red;
+    background-color: inherit;
+}
+
+div.Output {
+    font-family: monospace;
+    color: red;
+    background-color: inherit;
+}
+
+div.Icon {
+    color: inherit;
+    background-color : #B0E0E6;
+    font-weight : bold;
+}
+
+div.Screen {
+    font-family: monospace;
+    padding-top: 3mm;
+    padding-left: 4pt;
+    padding-bottom: 2pt;
+    display: block;
+    margin-top: 12pt;
+    margin-bottom: 12pt;
+    white-space: pre;
+    color: inherit;
+    background-color: #FFCC99;
+}
