@@ -106,7 +106,7 @@ isc.defineClass("UploadProgressWindow", "Window").addProperties({
 
   _saveFileDataCallback: function(response) {
     if (this.timedUpdate) {
-      Timer.clear(this.timedUpdate);
+      isc.Timer.clear(this.timedUpdate);
       this.timedUpdate = null;
     }
 

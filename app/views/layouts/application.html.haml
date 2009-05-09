@@ -7,6 +7,7 @@
 
     %script
       = "var isomorphicDir = '/#{isomorphicDir}/';"
+      = "window.isc_useSimpleNames = false;"
 
     - %w( ISC_Core.js ISC_Foundation.js ISC_Containers.js ISC_Grids.js ISC_Forms.js ISC_DataBinding.js ).each do |js|
       = javascript_include_tag "/#{isomorphicDir}/system/modules/#{js}"

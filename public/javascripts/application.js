@@ -121,4 +121,4 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
 isc.Page.setEvent("load", function() {
   var app = isc.TEI.create();
   app.draw();
-}, Page.FIRE_ONCE);
+}, isc.Page.FIRE_ONCE);
