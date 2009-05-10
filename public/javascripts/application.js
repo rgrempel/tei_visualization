@@ -239,7 +239,6 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
   xmlSerializer: null,
   dataProtocol: "clientCustom",
   dataFormat: "xml",
-  requestQueue: [],
 
   init: function() {
     if (this.xsltName) {
@@ -253,25 +252,19 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
     this.xsltDocument = doc;
     this.xsltProcessor = new XSLTProcessor();
     this.xsltProcessor.importStylesheet(doc.nativeDoc);
-
-    // Note that the delayCall seems to be necessary to make sure that the importStylesheet
-    // has really finished
-    this.delayCall("checkRequestQueue");
+    this.checkRequestQueue();
   },
 
   setXMLDocument: function(doc) {
     this.xmlDocument = doc;
-
-    // Note that the delayCall seems to be necessary to make sure that the importStylesheet
-    // has really finished
-    this.delayCall("checkRequestQueue");
+    this.checkRequestQueue();
   },
 
   checkRequestQueue: function() {
-    if (this.xmlDocument && this.xsltProcessor) {
+    if (this.xmlDocument && this.xsltProcessor && this.requestQueue && this.requestQueue.length > 0) {
       var self = this;
       this.requestQueue.map(function (dsRequest) {
-        self.executeRequest(dsRequest);
+        self.delayCall("executeRequest", [dsRequest]);
       });
       delete this.requestQueue;
     }
@@ -281,6 +274,7 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
     if (this.xmlDocument && this.xsltProcessor) {
       this.delayCall("executeRequest", [dsRequest]);
     } else {
+      if (!this.requestQueue) this.requestQueue = [];
       this.requestQueue.add(dsRequest);
     }
   },
