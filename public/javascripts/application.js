@@ -28,6 +28,11 @@ isc.TEI.addProperties({
       ]
     });
 
+    this.documentArea = isc.Canvas.create({
+      width: "100%",
+      height: "100%"
+    });
+
     this.navigation = isc.VLayout.create({
       width: "100%",
       height: "100%",
@@ -43,7 +48,8 @@ isc.TEI.addProperties({
               }
             })
           ]
-        })
+        }),
+        this.documentArea
       ]
     });
   },
@@ -59,13 +65,18 @@ isc.TEI.addProperties({
   doOpenDocument: function(doc) {
     if (this.teiDocument == doc) return;
     if (this.teiDocument) {
-      this.navigation.removeMember(this.teiDocument);
+      this.documentArea.removeChild(this.teiDocument);
       this.teiDocument.markForDestroy();
     }
     this.teiDocument = isc.TEIDocument.create({
+      width: "100%",
+      height: "100%",
       record: doc
     });
-    if (this.teiDocument) this.navigation.addMember(this.teiDocument);
+    if (this.teiDocument) {
+      this.documentArea.addChild(this.teiDocument);
+      this.teiDocument.show();
+    }
   },
 
   newDocumentWindow: null,
@@ -121,13 +132,18 @@ isc.XSLTDocument.addClassProperties({
   }
 });
 
-isc.defineClass("TEIDocument", isc.HLayout).addProperties({
+isc.defineClass("TEIDocument", isc.Window).addProperties({
   record: null,
   xmlDocument: null,
   dataSources: {},
+  maximized: true,
+  keepInParentRect: true,
+  showMaximizeButton: true,
 
   initWidget: function(){
     this.Super("initWidget", arguments);
+
+    this.setTitle(this.record.title);
 
     isc.addProperties(this.dataSources, {
       tocTree: isc.TocTreeDataSource.create()
@@ -135,13 +151,16 @@ isc.defineClass("TEIDocument", isc.HLayout).addProperties({
 
     this.mainPanel = isc.XSLTFlow.create({
       xsltName: "main",
-      width: "100%",
-      height: "100%"
+      width: "*",
+      height: "100%",
+      showResizeBar: true,
+      resizeBarTarget: "next"
     });
 
     this.tocPanel = isc.TocTreeGrid.create({
-      width: "100%",
+      width: 200,
       height: "100%",
+      showEdges: true,
       dataSource: this.dataSources.tocTree
     });
 
@@ -149,8 +168,25 @@ isc.defineClass("TEIDocument", isc.HLayout).addProperties({
       isc.XMLTools.loadXML("/documents/" + this.record.id + ".tei", {target: this, methodName: "loadXMLReply"}, {bypassCache: false});
     }
 
-    this.addMember(this.mainPanel);
-    this.addMember(this.tocPanel);
+    this.addItem(
+      isc.HLayout.create({
+        members: [
+          this.mainPanel,
+          this.tocPanel
+        ]
+      })
+    );
+  },
+
+  destroy: function() {
+    delete this.dataSources;
+    delete this.xmlDocument;
+
+    return this.Super("destroy", arguments);
+  },
+
+  closeClick: function() {
+    this.markForDestroy();
   },
 
   loadXMLReply: function(xmlDoc, xmlText) {
