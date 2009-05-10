@@ -121,7 +121,7 @@ isc.XSLTDocument.addClassProperties({
   }
 });
 
-isc.defineClass("TEIDocument", isc.VLayout).addProperties({
+isc.defineClass("TEIDocument", isc.HLayout).addProperties({
   record: null,
   xmlDocument: null,
   dataSources: {},
@@ -129,10 +129,20 @@ isc.defineClass("TEIDocument", isc.VLayout).addProperties({
   initWidget: function(){
     this.Super("initWidget", arguments);
 
+    isc.addProperties(this.dataSources, {
+      tocTree: isc.TocTreeDataSource.create()
+    });
+
     this.mainPanel = isc.XSLTFlow.create({
       xsltName: "main",
       width: "100%",
       height: "100%"
+    });
+
+    this.tocPanel = isc.TocTreeGrid.create({
+      width: "100%",
+      height: "100%",
+      dataSource: this.dataSources.tocTree
     });
 
     if (this.record) {
@@ -140,11 +150,17 @@ isc.defineClass("TEIDocument", isc.VLayout).addProperties({
     }
 
     this.addMember(this.mainPanel);
+    this.addMember(this.tocPanel);
   },
 
   loadXMLReply: function(xmlDoc, xmlText) {
     this.xmlDocument = xmlDoc;
     this.mainPanel.setXMLDocument(xmlDoc);
+
+    var self = this;
+    isc.getKeys(this.dataSources).map(function(key) {
+      self.dataSources[key].setXMLDocument(xmlDoc);
+    });
   }
 });
 
@@ -201,19 +217,25 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
     this.xsltDocument = doc;
     this.xsltProcessor = new XSLTProcessor();
     this.xsltProcessor.importStylesheet(doc.nativeDoc);
-    this.checkRequestQueue();
+
+    // Note that the delayCall seems to be necessary to make sure that the importStylesheet
+    // has really finished
+    this.delayCall("checkRequestQueue");
   },
 
   setXMLDocument: function(doc) {
     this.xmlDocument = doc;
-    this.checkRequestQueue();
+
+    // Note that the delayCall seems to be necessary to make sure that the importStylesheet
+    // has really finished
+    this.delayCall("checkRequestQueue");
   },
 
   checkRequestQueue: function() {
     if (this.xmlDocument && this.xsltProcessor) {
       var self = this;
       this.requestQueue.map(function (dsRequest) {
-        self.executedRequest(dsRequest);
+        self.executeRequest(dsRequest);
       });
       delete this.requestQueue;
     }
@@ -246,20 +268,27 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
   },
 
   _completeHandleXMLReply: function(dsResponse, callback) {
+    dsResponse.clientContext = callback.dsRequest.clientContext;
     this.processResponse(callback.dsRequest.requestId, dsResponse);
   }
 });
 
-// Note that this would need to be handled differently if I wanted to allow more than one
-// document to be open at once ...
-isc.XSLTDataSource.create({
-  ID: "tocTree",
+isc.defineClass("TocTreeDataSource", "XSLTDataSource").addProperties({
   xsltName: "tocTree",
   recordXPath: "/default:toc/default:tocentry",
   fields: [
-    {name: "text", type: "text", title: "Text"},
+    {name: "text", type: "text", title: "Title"},
     {name: "id", type: "text", title: "ID"},
-    {name: "n", type: "text", title: "n"}
+    {name: "n", type: "text", title: "n"},
+    {name: "children", childrenField: true}
+  ]
+});
+
+isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
+  autoFetchData: true,
+  loadDataOnDemand: false,
+  fields: [
+    {name: "text", treeField: true}
   ]
 });
 

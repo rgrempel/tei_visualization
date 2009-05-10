@@ -31,7 +31,11 @@
           <xsl:attribute name="n">
               <xsl:apply-templates select="." mode="n" />
           </xsl:attribute>
-          <xsl:apply-templates select="tei:div[not(@rend='analysis')]" />
+          <xsl:if test="tei:div[not(@rend='analysis')]">
+            <children>
+              <xsl:apply-templates select="tei:div[not(@rend='analysis')]" />
+            </children>
+          </xsl:if>
       </tocentry>
     </xsl:template>
 </xsl:stylesheet>
