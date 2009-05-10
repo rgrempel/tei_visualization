@@ -124,6 +124,7 @@ isc.XSLTDocument.addClassProperties({
 isc.defineClass("TEIDocument", isc.VLayout).addProperties({
   record: null,
   xmlDocument: null,
+  dataSources: {},
 
   initWidget: function(){
     this.Super("initWidget", arguments);
@@ -176,6 +177,90 @@ isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
       this.setContents(isc.XMLTools.transformNodes(this.xmlDocument, this.xsltDocument));
     }
   }
+});
+
+isc.defineClass("XSLTDataSource","DataSource").addProperties({
+  xmlDocument: null,
+  xsltDocument: null,
+  xsltName: null,
+  xsltProcessor: null,
+  xmlSerializer: null,
+  dataProtocol: "clientCustom",
+  dataFormat: "xml",
+  requestQueue: [],
+
+  init: function() {
+    if (this.xsltName) {
+      isc.XSLTDocument.loadSheet(this.xsltName, {target: this, methodName: "setXSLTDocument"});
+    };
+    this.xmlSerializer = new XMLSerializer();
+    return this.Super("init", arguments);
+  },
+
+  setXSLTDocument: function(doc) {
+    this.xsltDocument = doc;
+    this.xsltProcessor = new XSLTProcessor();
+    this.xsltProcessor.importStylesheet(doc.nativeDoc);
+    this.checkRequestQueue();
+  },
+
+  setXMLDocument: function(doc) {
+    this.xmlDocument = doc;
+    this.checkRequestQueue();
+  },
+
+  checkRequestQueue: function() {
+    if (this.xmlDocument && this.xsltProcessor) {
+      var self = this;
+      this.requestQueue.map(function (dsRequest) {
+        self.executedRequest(dsRequest);
+      });
+      delete this.requestQueue;
+    }
+  },
+
+  transformRequest: function(dsRequest) {
+    if (this.xmlDocument && this.xsltProcessor) {
+      this.delayCall("executeRequest", [dsRequest]);
+    } else {
+      this.requestQueue.add(dsRequest);
+    }
+  },
+
+  executeRequest: function(dsRequest) {
+    var xmlData = isc.XMLDoc.create(this.xsltProcessor.transformToDocument(this.xmlDocument.nativeDoc));
+
+    // Now, we simulate what a DataSource would ordinarily do ...
+    var operationBinding = this.getOperationBinding(dsRequest);
+    xmlData.addNamespaces(this.xmlNamespaces);
+    xmlData.addNamespaces(operationBinding.xmlNamespaces);
+
+    var xmlNamespaces = isc.addProperties({}, this.xmlNamespaces, operationBinding.xmlNamespaces);
+
+    this.dsResponseFromXML(xmlData, dsRequest, xmlNamespaces, {
+      target: this,
+      methodName: "_completeHandleXMLReply",
+      xmlData: xmlData,
+      dsRequest: dsRequest
+    });
+  },
+
+  _completeHandleXMLReply: function(dsResponse, callback) {
+    this.processResponse(callback.dsRequest.requestId, dsResponse);
+  }
+});
+
+// Note that this would need to be handled differently if I wanted to allow more than one
+// document to be open at once ...
+isc.XSLTDataSource.create({
+  ID: "tocTree",
+  xsltName: "tocTree",
+  recordXPath: "/default:toc/default:tocentry",
+  fields: [
+    {name: "text", type: "text", title: "Text"},
+    {name: "id", type: "text", title: "ID"},
+    {name: "n", type: "text", title: "n"}
+  ]
 });
 
 isc.defineClass("NewDocumentWindow", isc.Window).addProperties({
