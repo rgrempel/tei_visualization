@@ -28,6 +28,35 @@ isc.TEI.addProperties({
       ]
     });
 
+    this.menuBar = isc.MenuBar.create({
+      menus: [
+        {
+          title: "Documents",
+          width: 100,
+          data: [
+            {
+              title: "Open",
+              action: function() {
+                isc.TEI.app.showDocumentList();
+              }
+            }
+          ]
+        },
+        {
+          title: "Analysis",
+          width: 100,
+          data: [
+            {
+              title: "Names",
+              action: function() {
+                isc.TEI.app.teiDocument.showNames();
+              }
+            }
+          ]
+        }
+      ]
+    });
+
     this.documentArea = isc.Canvas.create({
       width: "100%",
       height: "100%"
@@ -37,18 +66,7 @@ isc.TEI.addProperties({
       width: "100%",
       height: "100%",
       members: [
-        isc.Toolbar.create({
-          width: "100%",
-          buttons: [
-            isc.Button.create({
-              autoFit: true,
-              title: "Show Document List",
-              action: function() {
-                isc.TEI.app.showDocumentList();
-              }
-            })
-          ]
-        }),
+        this.menuBar,
         this.documentArea
       ]
     });
@@ -96,6 +114,7 @@ isc.XSLTDocument.addClassProperties({
     main: "/xslt/main.xsl",
     common: "/xslt/common.xsl",
     nameTree: "/xslt/names.xsl",
+    nameGrid: "/xslt/namesGrid.xsl",
     interpretationTree: "/xslt/interpretations.xsl",
     nameKwic: "/xslt/names-kwic.xsl",
     nameDialog: "/xslt/names-dialog.xsl",
@@ -146,7 +165,8 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.setTitle(this.record.title);
 
     isc.addProperties(this.dataSources, {
-      tocTree: isc.TocTreeDataSource.create()
+      tocTree: isc.TocTreeDataSource.create(),
+      names: isc.NamesDataSource.create()
     });
 
     this.mainPanel = isc.XSLTFlow.create({
@@ -158,21 +178,42 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
 
     this.tocPanel = isc.TocTreeGrid.create({
+      width: "100%",
+      height: "100%",
+      dataSource: this.dataSources.tocTree
+    });
+
+    this.rightPanel = isc.VLayout.create({
       width: 200,
       height: "100%",
       showEdges: true,
-      dataSource: this.dataSources.tocTree
+      members: [
+        this.tocPanel
+      ]
     });
 
     if (this.record) {
       isc.XMLTools.loadXML("/documents/" + this.record.id + ".tei", {target: this, methodName: "loadXMLReply"}, {bypassCache: false});
     }
 
+    this.dock = isc.TabSet.create({
+      height: 100,
+      width: "100%"
+    });
+
     this.addItem(
-      isc.HLayout.create({
+      isc.VLayout.create({
         members: [
-          this.mainPanel,
-          this.tocPanel
+          isc.HLayout.create({
+            height: "*",
+            showResizeBar: true,
+            resizeBarTarget: "next",
+            members: [
+              this.mainPanel,
+              this.rightPanel
+            ]
+          }),
+          this.dock
         ]
       })
     );
@@ -197,6 +238,19 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.getKeys(this.dataSources).map(function(key) {
       self.dataSources[key].setXMLDocument(xmlDoc);
     });
+  },
+
+  showNames: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 400,
+      height: 400,
+      items: [
+        isc.NamesPanel.create({
+          teiDocument: this
+        })
+      ]
+    }).show();
   }
 });
 
@@ -300,6 +354,42 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
   _completeHandleXMLReply: function(dsResponse, callback) {
     dsResponse.clientContext = callback.dsRequest.clientContext;
     this.processResponse(callback.dsRequest.requestId, dsResponse);
+  }
+});
+
+isc.defineClass("NamesDataSource", "XSLTDataSource").addProperties({
+  xsltName: "nameGrid",
+  recordXPath: "/default:names/default:name",
+  fields: [
+    {name: "key", type: "text", primaryKey: true},
+    {name: "type", type: "text", title: "Type"},
+    {name: "text", type: "text", title: "Name"}
+  ]
+});
+
+isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
+  autoFetchData: true,
+  groupByField: "type",
+  groupStartOpen: "none",
+  fields: [
+    {name: "text", width: "*"},
+    {name: "key", width: 40},
+    {name: "type", width: 20}
+  ]
+});
+
+// This is the analysis panel for names
+isc.defineClass("NamesPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    this.addMember(
+      isc.NamesGrid.create({
+        dataSource: this.teiDocument.dataSources["names"],
+        width: "100%",
+        height: "100%"
+      })
+    );
   }
 });
 
