@@ -113,8 +113,7 @@ isc.XSLTDocument.addClassProperties({
     projects: "/xslt/projects.xsl",
     main: "/xslt/main.xsl",
     common: "/xslt/common.xsl",
-    nameTree: "/xslt/names.xsl",
-    nameGrid: "/xslt/namesGrid.xsl",
+    names: "/xslt/names.xsl",
     interpretationTree: "/xslt/interpretations.xsl",
     nameKwic: "/xslt/names-kwic.xsl",
     nameDialog: "/xslt/names-dialog.xsl",
@@ -358,7 +357,7 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
 });
 
 isc.defineClass("NamesDataSource", "XSLTDataSource").addProperties({
-  xsltName: "nameGrid",
+  xsltName: "names",
   recordXPath: "/default:names/default:name",
   fields: [
     {name: "key", type: "text", primaryKey: true},
