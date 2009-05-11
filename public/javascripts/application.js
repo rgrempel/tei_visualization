@@ -47,9 +47,9 @@ isc.TEI.addProperties({
           width: 100,
           data: [
             {
-              title: "Names",
+              title: "Names KWIC",
               action: function() {
-                isc.TEI.app.teiDocument.showNames();
+                isc.TEI.app.teiDocument.showNamesKWIC();
               }
             }
           ]
@@ -150,6 +150,8 @@ isc.XSLTDocument.addClassProperties({
   }
 });
 
+isc.XSLTDocument.loadSheet("common");
+
 isc.defineClass("TEIDocument", isc.Window).addProperties({
   record: null,
   xmlDocument: null,
@@ -239,13 +241,14 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
   },
 
-  showNames: function() {
+  showNamesKWIC: function() {
     isc.Window.create({
       autoCenter: true,
-      width: 400,
+      width: 800,
       height: 400,
       items: [
-        isc.NamesPanel.create({
+        isc.NamesKWICPanel.create({
+          height: "100%",
           teiDocument: this
         })
       ]
@@ -257,10 +260,13 @@ isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
   xmlDocument: null,
   xsltName: null,
   xsltDocument: null,
+  xsltProcessor: null,
   overflow: "auto",
+  xmlSerializer: new XMLSerializer(),
 
   initWidget: function() {
     this.Super("initWidget", arguments);
+    this.params = {};
     this.reload();
     if (this.xsltName) {
       isc.XSLTDocument.loadSheet(this.xsltName, {target: this, methodName: "setXSLTDocument"});
@@ -269,17 +275,32 @@ isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
 
   setXMLDocument: function(xmlDoc) {
     this.xmlDocument = xmlDoc;
-    this.reload();
+    this.delayCall("reload");
   },
 
   setXSLTDocument: function(xsltDoc) {
     this.xsltDocument = xsltDoc;
+    this.xsltProcessor = new XSLTProcessor();
+    this.xsltProcessor.importStylesheet(this.xsltDocument.nativeDoc);
+
+    this.delayCall("reload");
+  },
+
+  setParams: function(params) {
+    this.params = params || {};
     this.reload();
   },
 
   reload: function() {
     if (this.xmlDocument && this.xsltDocument) {
-      this.setContents(isc.XMLTools.transformNodes(this.xmlDocument, this.xsltDocument));
+      var self = this;
+      this.xsltProcessor.clearParameters();
+      isc.getKeys(this.params).map(function(key) {
+        self.xsltProcessor.setParameter(null, key, self.params[key]);
+      });
+      var xmlData = isc.XMLDoc.create(this.xsltProcessor.transformToDocument(this.xmlDocument.nativeDoc));
+      var contents = this.xmlSerializer.serializeToString(xmlData.nativeDoc);
+      this.setContents(contents);
     }
   }
 });
@@ -378,17 +399,33 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
 });
 
 // This is the analysis panel for names
-isc.defineClass("NamesPanel", isc.HLayout).addProperties({
+isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
-    this.addMember(
-      isc.NamesGrid.create({
-        dataSource: this.teiDocument.dataSources["names"],
-        width: "100%",
-        height: "100%"
-      })
-    );
+
+    this.grid = isc.NamesGrid.create({
+      dataSource: this.teiDocument.dataSources["names"],
+      width: "20%",
+      height: "100%",
+      parent: this,
+      selectionChanged: function(record, state) {
+        if (state) this.parent.kwic.setParams({key: record.key});
+      }
+    }),
+
+    this.kwic = isc.XSLTFlow.create({
+      xmlDocument: this.teiDocument.xmlDocument,
+      xsltName: "nameKwic",
+      showEdges: true,
+      width: "80%",
+      height: "100%"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.kwic
+    ]);
   }
 });
 
