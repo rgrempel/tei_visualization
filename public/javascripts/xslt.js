@@ -32,11 +32,11 @@ isc.XSLTDocument.addClassProperties({
 
   loadSheet: function(name, callback) {
     var self = isc.XSLTDocument;
-    if (self.sheets[name]) {
-      self.fireCallback(callback, "xmlDoc", [self.sheets[name]]);
+    if (self.sheets[self.urls[name]]) {
+      self.fireCallback(callback, "xmlDoc", [self.sheets[self.urls[name]]]);
     } else if (self.urls[name]) {
       isc.XMLTools.loadXML(self.urls[name], function(xmlDoc, xmlText) {
-        self.sheets[name] = xmlDoc;
+        self.sheets[self.urls[name]] = xmlDoc;
         self.fireCallback(callback, "xmlDoc", [xmlDoc]);
       }, {bypassCache: false});
     }
