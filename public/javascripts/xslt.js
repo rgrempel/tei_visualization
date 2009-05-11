@@ -32,18 +32,66 @@ isc.XSLTDocument.addClassProperties({
 
   loadSheet: function(name, callback) {
     var self = isc.XSLTDocument;
-    if (self.sheets[self.urls[name]]) {
-      self.fireCallback(callback, "xmlDoc", [self.sheets[self.urls[name]]]);
-    } else if (self.urls[name]) {
-      isc.XMLTools.loadXML(self.urls[name], function(xmlDoc, xmlText) {
-        self.sheets[self.urls[name]] = xmlDoc;
-        self.fireCallback(callback, "xmlDoc", [xmlDoc]);
+    if (self.urls[name]) self.loadSheetByURL(self.urls[name], callback);
+  },
+
+  loadSheetByURL: function(url, callback) {
+    var self = isc.XSLTDocument;
+    var existingDoc = self.sheets[url];
+    if (existingDoc) {
+      if (existingDoc.unmetDependencies.getLength() == 0) {
+        self.fireCallback(callback, "xmlDoc", [existingDoc]);
+      } else {
+        existingDoc.callbackWhenReady.add(callback);
+      }
+    } else {
+      isc.XMLTools.loadXML(url, function(xmlDoc, xmlText) {
+        self.sheets[url] = xmlDoc;
+        xmlDoc.callbackWhenReady = [callback];
+        xmlDoc.loadedFromURL = url;
+        xmlDoc.initializeXSLTDependencies();
       }, {bypassCache: false});
     }
   }
 });
 
-isc.XSLTDocument.loadSheet("common");
+isc.XMLDoc.addProperties({
+  fireCallbackWhenReady: function() {
+    var self = this;
+    self.callbackWhenReady.map(function(callback) {
+      self.fireCallback(callback, "xmlDoc", [self]);
+    });
+    self.callbackWhenReady = [];
+  },
+
+  initializeXSLTDependencies: function() {
+    var self = this;
+
+    var dependencyNodes = self.selectNodes("//xsl:include | //xsl:import", {
+      xsl: "http://www.w3.org/1999/XSL/Transform"
+    });
+
+    this.unmetDependencies = dependencyNodes.map(function(node) {
+      return node.getAttribute("href");
+    });
+
+    if (this.unmetDependencies.getLength() == 0) {
+      this.fireCallbackWhenReady();
+    } else {
+      this.unmetDependencies.map(function(url) {
+        isc.XSLTDocument.loadSheetByURL(url, {
+          target: self,
+          methodName: "metDependency"
+        });
+      });
+    }
+  },
+
+  metDependency: function(xmlDoc) {
+    this.unmetDependencies.remove(xmlDoc.loadedFromURL);
+    if (this.unmetDependencies.getLength() == 0) this.fireCallbackWhenReady();
+  }
+});
 
 isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
   xmlDocument: null,
