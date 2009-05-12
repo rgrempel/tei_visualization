@@ -30,6 +30,8 @@ isc.XSLTDocument.addClassProperties({
 
   sheets: {},
 
+  pendingCallbacks: {},
+
   loadSheet: function(name, callback) {
     var self = isc.XSLTDocument;
     if (self.urls[name]) self.loadSheetByURL(self.urls[name], callback);
@@ -42,15 +44,20 @@ isc.XSLTDocument.addClassProperties({
       if (existingDoc.unmetDependencies.getLength() == 0) {
         self.fireCallback(callback, "xmlDoc", [existingDoc]);
       } else {
-        existingDoc.callbackWhenReady.add(callback);
+        self.pendingCallbacks[url].add(callback);
       }
     } else {
-      isc.XMLTools.loadXML(url, function(xmlDoc, xmlText) {
-        self.sheets[url] = xmlDoc;
-        xmlDoc.callbackWhenReady = [callback];
-        xmlDoc.loadedFromURL = url;
-        xmlDoc.initializeXSLTDependencies();
-      }, {bypassCache: false});
+      var pendingCallbacks = self.pendingCallbacks[url];
+      if (pendingCallbacks) {
+        pendingCallbacks.add(callback);
+      } else {
+        self.pendingCallbacks[url] = [callback];
+        isc.XMLTools.loadXML(url, function(xmlDoc, xmlText) {
+          self.sheets[url] = xmlDoc;
+          xmlDoc.loadedFromURL = url;
+          xmlDoc.initializeXSLTDependencies();
+        });
+      }
     }
   }
 });
@@ -58,10 +65,10 @@ isc.XSLTDocument.addClassProperties({
 isc.XMLDoc.addProperties({
   fireCallbackWhenReady: function() {
     var self = this;
-    self.callbackWhenReady.map(function(callback) {
+    isc.XSLTDocument.pendingCallbacks[self.loadedFromURL].map(function(callback) {
       self.fireCallback(callback, "xmlDoc", [self]);
     });
-    self.callbackWhenReady = [];
+    isc.XSLTDocument.pendingCallbacks[self.loadedFromURL] = null;
   },
 
   initializeXSLTDependencies: function() {
