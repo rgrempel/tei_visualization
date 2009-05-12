@@ -7,7 +7,7 @@ isc.XSLTDocument.addClassProperties({
     main: "/xslt/main.xsl",
     common: "/xslt/common.xsl",
     names: "/xslt/names.xsl",
-    interpretationTree: "/xslt/interpretations.xsl",
+    interpretations: "/xslt/interpretations.xsl",
     nameKwic: "/xslt/names-kwic.xsl",
     nameDialog: "/xslt/names-dialog.xsl",
     interpretationKwic: "/xslt/interpretations-kwic.xsl",

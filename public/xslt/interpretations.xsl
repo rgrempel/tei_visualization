@@ -11,17 +11,11 @@
 
     <xsl:template match="/">
         <pd:interpretations>
-            <xsl:apply-templates select="//tei:interpGrp | //tei:interp[not(parent::tei:interpGrp)]"/>
+            <xsl:apply-templates select="//tei:interp"/>
         </pd:interpretations>
     </xsl:template>
 
-    <xsl:template match="tei:interpGrp">
-        <pd:interpGrp id="interpGrp-{@type}" text="{@type}" type="{@type}" loaded="true">
-            <xsl:apply-templates select="tei:interp"/>
-        </pd:interpGrp>
-    </xsl:template>
-
     <xsl:template match="tei:interp">
-        <pd:interp id="{@xml:id}" key="{@xml:id}" text="{.}" leaf="true"/>
+        <pd:interp id="{@xml:id}" key="{@xml:id}" text="{.}" group="{ancestor::tei:interpGrp/@type}" />
     </xsl:template>
 </xsl:stylesheet>

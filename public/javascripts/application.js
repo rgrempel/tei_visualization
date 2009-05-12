@@ -57,6 +57,12 @@ isc.TEI.addProperties({
               action: function() {
                 isc.TEI.app.teiDocument.showNamesDialog();
               }
+            },
+            {
+              title: "Interpretations KWIC",
+              action: function() {
+                isc.TEI.app.teiDocument.showInterpretationsKWIC();
+              }
             }
           ]
         }
@@ -128,7 +134,8 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 
     isc.addProperties(this.dataSources, {
       tocTree: isc.TocTreeDataSource.create(),
-      names: isc.NamesDataSource.create()
+      names: isc.NamesDataSource.create(),
+      interpretations: isc.InterpsDataSource.create()
     });
 
     this.mainPanel = isc.XSLTFlow.create({
@@ -202,6 +209,23 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
   },
 
+  showInterpretationsKWIC: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.InterpsKWICPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
   showNamesKWIC: function() {
     isc.Window.create({
       autoCenter: true,
@@ -235,6 +259,26 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       ]
     }).show();
   }
+});
+
+isc.defineClass("InterpsDataSource", "XSLTDataSource").addProperties({
+  xsltName: "interpretations",
+  recordXPath: "/default:interpretations/default:interp",
+  fields: [
+    {name: "id", type: "text", primaryKey: true},
+    {name: "text", type: "text"},
+    {name: "group", type: "text"}
+  ]
+});
+
+isc.defineClass("InterpsGrid", isc.ListGrid).addProperties({
+  autoFetchData: true,
+  groupByField: "group",
+  groupStartOpen: "none",
+  fields: [
+    {name: "text", title: "Interpretation", width: "*"},
+    {name: "group", title: "Group", width: "20"}
+  ]
 });
 
 isc.defineClass("NamesDataSource", "XSLTDataSource").addProperties({
@@ -307,6 +351,36 @@ isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
     this.kwic = isc.XSLTFlow.create({
       xmlDocument: this.teiDocument.xmlDocument,
       xsltName: "nameKwic",
+      showEdges: true,
+      width: "80%",
+      height: "100%"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.kwic
+    ]);
+  }
+});
+
+isc.defineClass("InterpsKWICPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.InterpsGrid.create({
+      dataSource: this.teiDocument.dataSources["interpretations"],
+      width: "20%",
+      height: "100%",
+      parent: this,
+      selectionChanged: function(record, state) {
+        if (state) this.parent.kwic.setParams({key: record.key});
+      }
+    }),
+
+    this.kwic = isc.XSLTFlow.create({
+      xmlDocument: this.teiDocument.xmlDocument,
+      xsltName: "interpretationKwic",
       showEdges: true,
       width: "80%",
       height: "100%"
