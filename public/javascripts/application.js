@@ -63,6 +63,12 @@ isc.TEI.addProperties({
               action: function() {
                 isc.TEI.app.teiDocument.showInterpretationsKWIC();
               }
+            },
+            {
+              title: "Document Tree",
+              action: function() {
+                isc.TEI.app.teiDocument.showDOMGrid();
+              }
             }
           ]
         }
@@ -207,6 +213,27 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.getKeys(this.dataSources).map(function(key) {
       self.dataSources[key].setXMLDocument(xmlDoc);
     });
+  },
+
+  showDOMGrid: function() {
+    var grid =  isc.DOMGrid.create({
+      width: "100%",
+      height: "100%"
+    });
+
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 600,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        grid
+      ]
+    }).show();
+
+    grid.setRootElement(this.xmlDocument.documentElement);
   },
 
   showInterpretationsKWIC: function() {
