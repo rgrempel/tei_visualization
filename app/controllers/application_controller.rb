@@ -8,4 +8,9 @@ class ApplicationController < ActionController::Base
   # Scrub sensitive parameters from your log
   filter_parameter_logging :password
 
+  before_filter :checkIsomorphicDebug
+
+  def checkIsomorphicDebug
+    @isomorphicDebug = params.has_key?(:isomorphicDebug)
+  end
 end
