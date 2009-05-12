@@ -51,6 +51,12 @@ isc.TEI.addProperties({
               action: function() {
                 isc.TEI.app.teiDocument.showNamesKWIC();
               }
+            },
+            {
+              title: "Names Dialog",
+              action: function() {
+                isc.TEI.app.teiDocument.showNamesDialog();
+              }
             }
           ]
         }
@@ -201,8 +207,28 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       autoCenter: true,
       width: 800,
       height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
       items: [
         isc.NamesKWICPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
+  showNamesDialog: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.NamesDialogPanel.create({
           height: "100%",
           teiDocument: this
         })
@@ -230,6 +256,36 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
     {name: "key", width: 40},
     {name: "type", width: 20}
   ]
+});
+
+isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.NamesGrid.create({
+      dataSource: this.teiDocument.dataSources["names"],
+      width: "20%",
+      height: "100%",
+      parent: this,
+      selectionChanged: function(record, state) {
+        if (state) this.parent.dialog.setParams({key: record.key});
+      }
+    }),
+
+    this.dialog = isc.XSLTFlow.create({
+      xmlDocument: this.teiDocument.xmlDocument,
+      xsltName: "nameDialog",
+      showEdges: true,
+      width: "80%",
+      height: "100%"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.dialog
+    ]);
+  }
 });
 
 // This is the analysis panel for names

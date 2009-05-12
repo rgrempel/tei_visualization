@@ -20,7 +20,7 @@
                     <xsl:apply-templates select="key('said', $key)" mode="kwic"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <p>Click on a name to show the Keywords in Context</p>
+                    <p>Click on a name to show the &lt;said&gt; tags for that name.</p>
                 </xsl:otherwise>
             </xsl:choose>
         </div>
