@@ -7,3 +7,6 @@
 [submodule "public/javascripts/isomorphic"]
 	path = public/javascripts/isomorphic
 	url = git://github.com/rgrempel/isomorphic.git
+[submodule "vendor/plugins/paperclip"]
+	path = vendor/plugins/paperclip
+	url = git://github.com/thoughtbot/paperclip.git

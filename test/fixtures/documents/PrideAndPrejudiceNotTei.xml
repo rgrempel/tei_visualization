@@ -1,0 +1,397 @@
+<!-- The following line is like the DOCTYPE we are used to, except it uses a different method for specifying the permitted tags and attributes -->
+<?oxygen RNGSchema="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="xml"?>    
+
+<!-- The TEI tag is the "root" tag for a single TEI document. There is also <teiCorpus> for certain types of collections -->
+<notTEI xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:svg="http://www.w3.org/2000/svg" xmlns:math="http://www.w3.org/1998/Math/MathML"
+    xmlns="http://www.tei-c.org/ns/1.0">
+
+    <!-- The <teiHeader> is a little like the <head> in an HTML document. It provides information about the file ("metadata") which and the
+      way that it was produced. Note how you can document various decisions that you make about how the text is marked up ... 
+      In many cases, you can describe things in paragraphs (<p> tags), or use more specialized tags. -->
+
+    <!-- For documentation of the TEI Header, see:
+        TEI Lite: http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#U5-header
+         TEI Guidelines: http://www.tei-c.org/release/doc/tei-p5-doc/en/html/HD.html 
+    -->
+
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Pride and Prejudice: An electronic edition</title>
+                <author>Jane Austen</author>
+                <principal xml:id="ryan">Ryan Rempel</principal>
+            </titleStmt>
+            <editionStmt>
+                <edition>Initial edition, <date>October 2008</date></edition>
+            </editionStmt>
+            <publicationStmt>
+                <p>Not yet published</p>
+            </publicationStmt>
+            <sourceDesc>
+                <p>Original text from Project Gutenberg</p>
+            </sourceDesc>
+        </fileDesc>
+
+        <encodingDesc>
+            <p>Some text here describing how the text was encoded -- there are also specialized tags you can use.</p>
+
+            <projectDesc>
+                <p>A lab project for English 2450 at Canadian Mennonite University</p>
+            </projectDesc>
+
+            <editorialDecl>
+                <p>A statement about editorial decisions made in marking up the text -- there are also specialized tags you can use here.</p>
+            </editorialDecl>
+
+            <tagsDecl>
+                <!-- Can put information about rendition of the original here, or other information about how we are using tags. 
+                We will look at that later, so don't worry about it now -->
+            </tagsDecl>
+
+            <refsDecl>
+                <p>Information about how references are constructed -- explaining how the xml:id attribute is used. In this case, xml:id's were
+                    assigned to chapters in the form of "chapterN", where "N" is the chapter number.</p>
+            </refsDecl>
+        </encodingDesc>
+
+        <revisionDesc>
+            <change when="2008-10-14" who="#ryan">Initial creation.</change>
+        </revisionDesc>
+    </teiHeader>
+
+    <text>
+        <front>
+            <!-- Any "front" matter in the original text would be indicated here. Note that this is for front matter *from* the original ... any front matter
+            we want to supply for the electronic version would go in the XSL document. However, we can *mark* where we want generated content to go ... 
+            here we will indicate that a generated table of contents should go here ...
+            
+            see http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#teidiv1 -->
+            
+            <divGen type="toc" />
+        </front>
+
+        <body>
+            <!-- What I've done here is paste the guts of my previous XML file. I'll comment on the changes to make it TEI-conformant below -->
+
+            <!-- For major divisions, the TEI uses <div> (or, optionally, <div1>, <div2> etc. to indicate levels of division. Note that this isn't a "general purpose"
+ tag like the <div> in HTML ... instead, it is only for major divisions like chapters, acts and scenes -->
+            <!-- Also note that instead of an "id" attribute, we're now using an xml:id attribute. -->
+            <!-- Also note that we are using the "n" attribute to indicate the chapter number, since it can't be deduced from the context (gvein that we haven't
+            encoded chapters 1 and 2 in this file -->
+            
+            <!-- For futher information, see http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#divs   -->
+            
+            <!-- <chapter id="chapter3"> -->
+            <div type="chapter" xml:id="chapter3" n="3">
+
+                <!-- To indicate things like titles, we use the <head> tag in TEI (we had been using <title> a fair bit). -->
+                <!--           <title>Chapter 3</title> -->
+                <head>Chapter 3</head>
+
+                <!-- In the following paragraph, I had been keeping track of references to people. In the TEI, this is done with <name> and <rs> tags (depending
+    on whether it is a true name or a "referring string" (e.g. "his wife" is a referring string, while "Mrs. Bennet" is a name). The TEI uses the "type"
+    attribute to distinguish persons, places, organizations etc. and the "key" attribute to identify who is being referred to.
+
+For more information about this, see section 10.1 of the TEI Lite: http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#nomen
+
+-->
+
+                <p>Not all that <name type="person" key="mrs_bennet">Mrs. Bennet</name>, however, with the assistance of her five daughters, could ask
+                    on the subject, was sufficient to draw from <rs type="person" key="mr_bennet">her husband</rs> any satisfactory description of
+                        <name type="person" key="mr_bingley">Mr. Bingley</name>. They attacked <rs type="person" key="mr_bennet">him</rs> in various
+                    ways--with barefaced questions, ingenious suppositions, and distant surmises; but <rs type="person" key="mr_bennet">he</rs> eluded
+                    the skill of them all, and they were at last obliged to accept the second-hand intelligence of their neighbour, <name
+                        key="lady_lucas" type="person">Lady Lucas</name>. Her report was highly favourable. <name key="sir_william" type="person">Sir
+                        William</name> had been delighted with him. He was quite young, <seg ana="#beauty">wonderfully handsome</seg>, <seg
+                        ana="#temperment">extremely agreeable</seg>, and, to crown the whole, he meant to be at the next assembly with a large party.
+                    Nothing could be more delightful! <seg ana="#dancing">To be fond of dancing was a certain step towards <seg ana="#love">falling in
+                            love</seg></seg>; and very lively <seg ana="#love">hopes of <name key="mr_bingley" type="person">Mr. Bingley's</name>
+                    heart</seg> were entertained.</p>
+
+
+                <!-- I had marked up some speeches in the next paragraph. 
+    
+    If this were an actual play, we would use the <sp> tag to indicate a speech, and the "who" attribute to
+    indicate the speaker. For details, see:
+    
+    http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.htm#vedr
+    
+    Note that if you are doing A Midsummer Night's Dream, you'll particularly want to look at that ...
+    
+    But <sp> doesn't work for quotes embedded in a paragraph ... for that, the best thing is probably <said>. You can use the "who" attribute to indicate who said it ...
+    probably best to use the same scheme as you used for <name key="..."> and <rs key="..."> (and perhaps document it in the TEIHeader
+    
+    For more details on <said>, see http://www.tei-c.org/release/doc/tei-p5-doc/en/html/CO.html#COHQQ
+    
+    -->
+
+                <p><said who="mrs_bennet">"If I can but see one of my daughters happily settled at <name type="place" key="netherfield"
+                        >Netherfield</name>,"</said> said <name type="person" key="mrs_bennet">Mrs. Bennet</name> to <rs type="person" key="mr_bennet"
+                        >her husband</rs>, <said who="mrs_bennet">and <seg ana="#marriage">all the others equally well married</seg>, I shall have
+                        nothing to wish for."</said></p>
+
+                <!-- In the next paragraph, I am starting to mark up some general interpretation items. In the TEI, one way to do this is with the "ana" attribute
+    (short for "analysis"), which links to an "interpretation" element elsewhere in the document. At the end of the document, you'll see that I've
+    defined an <interpretation> element with the xml:id of "beauty". I use the <seg> tag here to mark something as relating to that theme ...
+                
+                See http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#body.1_div.15_div.2  for details.
+                
+                -->
+
+                <p>In a few days <name type="person" key="bingley">Mr. Bingley</name> returned <name type="person" key="mr_bennet">Mr. Bennet's</name>
+                    visit, and sat about ten minutes with him in his library. He had entertained hopes of being admitted to a sight of the young
+                    ladies, <seg ana="#beauty">of whose beauty he had heard much</seg>; but he saw only <rs type="person" key="mr_bennet">the
+                    father</rs>. The ladies were somewhat more fortunate, for they had the advantage of ascertaining from an upper window that he wore
+                    a blue coat, and rode a black horse.</p>
+
+                <p>An invitation to dinner was soon afterwards dispatched; and already had <name type="person" key="mrs_bennet">Mrs. Bennet</name>
+                    planned the courses that were to do credit to her housekeeping, when an answer arrived which deferred it all. <name type="person"
+                        key="mr_bingley">Mr. Bingley</name> was obliged to be in town the following day, and, consequently, unable to accept the
+                    honour of their invitation, etc. <name type="person" key="mrs_bennet">Mrs. Bennet</name> was quite disconcerted. She could not
+                    imagine what business he could have in town so soon after his arrival in <name type="place" key="hertfordshire"
+                    >Hertfordshire</name>; and she began to fear that he might be always flying about from one place to another, and never settled at
+                        <name type="place" key="netherfield">Netherfield</name> as he ought to be. <name type="person" key="lady_lucas">Lady
+                    Lucas</name> quieted her fears a little by starting the idea of his being gone to <name type="place" key="london">London</name>
+                    only to get a large party for the ball; and a report soon followed that <name type="person" key="mr_bingley">Mr. Bingley</name>
+                    was to bring twelve ladies and seven gentlemen with him to the assembly. The girls grieved over such a number of ladies, but were
+                    comforted the day before the ball by hearing, that instead of twelve <rs type="name" key="mr_bingley">he</rs> brought only six
+                    with him from <name type="place" key="london">London</name>--his five sisters and a cousin. And when the party entered the
+                    assembly room it consisted of only five altogether--<name type="person" key="mr_bingely">Mr. Bingley</name>, his two sisters, the
+                    husband of the eldest, and another young man.</p>
+
+                <p><name type="person" key="mr_bingley">Mr. Bingley</name> was <seg ana="#beauty">good-looking and gentlemanlike; he had a pleasant
+                        countenance</seg>, and <seg ana="#temperment">easy, unaffected manners</seg>. His sisters were fine women, <seg ana="#beauty"
+                        >with an air of decided fashion</seg>. His brother-in-law, <name type="person" key="mr_hurst">Mr. Hurst</name>, merely <seg
+                        ana="#beauty">looked the gentleman</seg>; but his friend <name type="person" key="mr_darcy">Mr. Darcy</name> soon drew the
+                    attention of the room by his <seg ana="#beauty">fine, tall person, handsome features, noble mien</seg> and the report which was in
+                    general circulation within five minutes after his entrance, of his <seg ana="#wealth">having ten thousand a year</seg>. The
+                    gentlemen pronounced him to be a <seg ana="#beauty">fine figure of a man</seg>, the ladies declared he was <seg ana="#beauty">much
+                        handsomer than <name type="person" key="mr_bingley">Mr. Bingley</name></seg>, and he was looked at with great admiration for
+                    about half the evening, till <seg ana="#temperment">his manners gave a disgust which turned the tide of his popularity; for he was
+                        discovered to be proud; to be above his company, and above being pleased</seg>; and not all his <seg ana="#wealth">large
+                        estate in <name type="place" key="derbyshire">Derbyshire</name></seg> could then save him from having a <seg ana="#beauty"
+                        >most forbidding, disagreeable countenance</seg>, and being unworthy to be compared with his friend.</p>
+
+                <p><name type="person" key="mr_bingley">Mr. Bingley</name> had soon made himself acquainted with all the principal people in the room; he
+                    was lively and unreserved, <seg ana="#dancing">danced every dance</seg>, was angry that the ball closed so early, and talked of
+                    giving one himself at <name type="place" key="netherfield">Netherfield</name>. Such <seg ana="#temperment">amiable qualities</seg>
+                    must speak for themselves. What a contrast between him and his friend! <name type="person" key="mr_darcy">Mr. Darcy</name>
+                    <seg ana="#dancing">danced only once</seg> with <name type="person" key="mrs_hurst">Mrs. Hurst</name> and once with <name
+                        type="person" key="miss_bingley">Miss Bingley</name>, declined being introduced to any other lady, and spent the rest of the
+                    evening in walking about the room, speaking occasionally to one of his own party. His character was decided. He was the <seg
+                        ana="#temperment">proudest, most disagreeable man in the world</seg>, and everybody hoped that he would never come there
+                    again. Amongst the most violent against him was <name type="person" key="mrs_bennet">Mrs. Bennet</name>, whose dislike of his
+                    general behaviour was sharpened into particular resentment by his having slighted one of her daughters.</p>
+
+                <p><name type="person" key="elizabeth_bennet">Elizabeth Bennet</name> had been obliged, by the scarcity of gentlemen, to <seg ana="#dancing"
+                        >sit down for two dances</seg>; and during part of that time, <name type="person" key="mr_darcy">Mr. Darcy</name> had been
+                    standing near enough for <rs type="person" key="elizabeth_bennet">her</rs> to hear a conversation between <rs type="person"
+                        key="mr_darcy">him</rs> and <name type="person" key="mr_bingley">Mr. Bingley</name>, who <seg ana="#dancing">came from the dance
+                        for a few minutes, to press <rs type="person" key="mr_darcy">his friend</rs> to join it</seg>.</p>
+
+                <p><said who="mr_bingley">"Come, <name type="person" key="mr_darcy">Darcy</name>,"</said> said <rs type="person" key="mr_bingely"
+                    >he</rs>, <said who="mr_bingley" ana="#dancing">"I must have you dance. I hate to see you standing about by yourself in this
+                        stupid manner. You had much better dance."</said></p>
+
+                <p>
+                    <said who="darcy" ana="#dancing">"<rs type="person" key="mr_darcy">I</rs> certainly shall not. You know how I detest it, unless I
+                        am particularly acquainted with my partner. At such an assembly as this it would be insupportable. Your sisters are engaged,
+                        and there is not another woman in the room whom it would not be a punishment to me to stand up with."</said>
+                </p>
+
+                <p><said who="mr_bingely">"<rs type="person" key="mr_bingley">I</rs> would not be so fastidious as <rs type="person" key="mr_darcy"
+                            >you</rs> are,"</said> cried <name type="person" key="mr_bingley">Mr. Bingley</name>, <said who="mr_bingely">"<seg
+                            ana="#wealth">for a kingdom</seg>! Upon my honour, I never met with <seg ana="#beauty">so many pleasant girls</seg> in my
+                        life as I have this evening; and there are several of them you see <seg ana="#beauty">uncommonly pretty</seg>."</said></p>
+
+                <!-- Here I had used <em> to indicate emphasis. In the TEI, we would use <emph> for this. For more information about highlighting in general, see:
+    
+    http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#U5-hilites
+    
+    -->
+
+                <p><said who="mr_darcy"><emph>
+                            <rs type="person" key="mr_bingely">You</rs>
+                        </emph> are <seg ana="#dancing">dancing with the only <seg ana="#beauty">handsome girl</seg> in the room</seg>,"</said> said
+                        <name type="person" key="mr_darcy">Mr. Darcy</name>, looking at the eldest <name type="person" key="miss_bennet">Miss
+                    Bennet</name>.</p>
+
+                <p>
+                    <said who="mr_bingely">Oh! <rs type="person" key="miss_bennet">She</rs> is the <seg ana="#beauty">most beautiful creature</seg> I
+                        ever beheld! But there is one of her sisters sitting down just behind you, who is <seg ana="#beauty">very pretty</seg>, and I
+                        dare say <seg ana="#temperment">very agreeable</seg>. Do let me ask my partner to introduce you."</said>
+                </p>
+
+                <p><said who="mr_darcy">"Which do <rs type="person" key="mr_bingley">you</rs> mean?"</said> and turning round <rs type="person"
+                        key="mr_darcy">he</rs> looked for a moment at <name type="person" key="miss_bennet">Elizabeth</name>, till catching her eye,
+                    he withdrew his own and coldly said: <said who="mr_darcy">"<rs type="person" key="miss_bennet">She</rs> is <seg ana="#beauty"
+                            >tolerable, but not handsome enough</seg> to tempt <emph>
+                            <rs type="person" key="mr_darcy">me</rs>
+                        </emph>; I am in no humour at present to give consequence to young ladies who are slighted by other men. You had better return
+                        to your partner and enjoy her smiles, for you are wasting your time with me."</said></p>
+
+                <p><name type="person" key="mr_bingley">Mr. Bingley</name> followed his advice. <name type="person" key="mr_darcy">Mr. Darcy</name>
+                    walked off; and <name type="person" key="miss_bennet">Elizabeth</name> remained with no very cordial feelings toward him. She told
+                    the story, however, with great spirit among her friends; for she had a <seg ana="#temperment">lively, playful disposition</seg>,
+                    which delighted in anything ridiculous.</p>
+
+                <p>The evening altogether passed off pleasantly to the whole family. <name type="person" key="mrs_bennet">Mrs. Bennet</name> had seen
+                    her eldest daughter much admired by the <name type="place" key="netherfield">Netherfield</name> party. <name type="person"
+                        key="mr_bingley">Mr. Bingley</name> had <seg ana="#dancing">danced with her twice</seg>, and she had been distinguished by his
+                    sisters. <name type="person" key="jane">Jane</name> was as much gratified by this as <rs type="person" key="mrs_bennet">her
+                    mother</rs> could be, though in a quieter way. <name type="person" key="miss_bennet">Elizabeth</name> felt <name type="person"
+                        key="jane">Jane's</name> pleasure. <name type="person" key="mary">Mary</name> had heard herself mentioned to <name
+                        type="person" key="miss_bingley">Miss Bingley</name> as the most accomplished girl in the neighbourhood; and <name
+                        type="person" key="catherine">Catherine</name> and <name type="person" key="lydia">Lydia</name> had been fortunate enough
+                    never to be without partners, which was all that they had yet learnt to care for at a ball. They returned, therefore, in good
+                    spirits to <name type="place" key="longbourn">Longbourn</name>, the village where they lived, and of which they were the principal
+                    inhabitants. They found <name type="person" key="mr_bennet">Mr. Bennet</name> still up. With a book he was regardless of time; and
+                    on the present occasion he had a good deal of curiosity as to the events of an evening which had raised such splendid
+                    expectations. <rs type="person" key="mr_bennet">He</rs> had rather hoped that <rs type="person" key="mrs_bennet">his wife's</rs>
+                    views on <rs type="person" key="mr_bingley">the stranger</rs> would be disappointed; but he soon found out that he had a different
+                    story to hear.</p>
+
+                <p><said who="mrs_bennet">"Oh! my dear <name type="person" key="mr_bennet">Mr. Bennet</name>,"</said> as she entered the room, <said
+                        who="mrs_bennet">"we have had a most delightful evening, a most excellent ball. I wish you had been there. <name type="person"
+                            key="jane">Jane</name> was <seg ana="#beauty">so admired</seg>, nothing could be like it. Everybody said <seg
+                            ana="#beauty">how well she looked</seg>; and <name type="person" key="mr_bingley">Mr. Bingley</name> thought <rs
+                            type="person" key="jane">her</rs>
+                        <seg ana="#beauty">quite beautiful</seg>, and <seg ana="#dancing">danced with <rs type="person" key="jane">her</rs>
+                        twice</seg>! Only think of <emph>that</emph>, my dear; he actually <seg ana="#dancing">danced with <rs type="person"
+                                key="jane">her</rs> twice</seg>! and <rs type="person" key="jane">she</rs> was the only creature in the room that he
+                        asked a second time. First of all, he asked <name type="person" key="miss_lucas">Miss Lucas</name>. I was so vexed to see him
+                            <seg ana="#dancing">stand up with her</seg>! But, however, he did not <seg ana="#beauty">admire</seg> her at all; indeed,
+                        nobody can, you know; and he seemed quite struck with <name type="person" key="jane">Jane</name> as she was going down the
+                        dance. So he inquired who she was, and got introduced, and asked her for the two next. Then the two third he <seg
+                            ana="#dancing">danced with <name type="person" key="miss_king">Miss King</name>, and the two fourth with <name
+                                type="person" key="maria_lucas">Maria Lucas</name>, and the two fifth with <name type="person" key="jane">Jane</name>
+                            again, and the two sixth with <name type="person" key="lizzy">Lizzy</name>, and the <emph>Boulanger</emph>--</seg>"</said></p>
+
+                <p><said who="mr_bennet">"If he had had any compassion for <emph>me</emph>,"</said> cried her husband impatiently, <said
+                        who="mr_bennet">"he <seg ana="#dancing">would not have danced half so much</seg>! For God's sake, say no more of his partners. O that he had sprained
+                        his ankle in the first place!"</said></p>
+
+                <p><said who="mrs_bingley">Oh! my dear, I am quite delighted with <rs type="person" key="mr_bingley">him</rs>. He is so <seg
+                    ana="#beauty">excessively handsome</seg>! And his sisters are <seg ana="#temperment">charming women</seg>. I never in my life
+                    saw anything more elegant than their dresses. I dare say the lace upon <name type="person" key="mrs_hurst">Mrs. Hurst's</name> gown--"</said></p>
+
+                <p>Here she was interrupted again. <name type="person" key="mr_bennet">Mr. Bennet</name> protested against any <seg
+                    ana="#beauty">description of finery</seg>. She was therefore obliged to seek another
+                    branch of the subject, and related, with much bitterness of spirit and some exaggeration, the <seg ana="#temperment">shocking
+                        rudeness</seg> of <name type="person" key="mr_darcy">Mr. Darcy</name>.</p>
+
+                <p><said who="mrs_bennet">"But I can assure you,"</said> she added, <said who="mrs_bennet">"that <name type="person"
+                    key="Lizzy">Lizzy</name> does not lose much by not suiting <emph>his</emph> fancy; for he is a <seg ana="#temperment">most
+                    disagreeable, horrid man,</seg> not at all worth pleasing. <seg ana="#temperment">So high and so conceited</seg> that there was no enduring him! He walked here, and
+                    he walked there, fancying himself so very great! <seg ana="#beauty #dancing">Not handsome enough to dance with!</seg> I wish you had been there, my dear, to have
+                    given him one of your set-downs. I quite detest the man."</said></p>
+
+            </div>
+
+
+            <div type="chapter" xml:id="chapter4" n="4">
+
+                <head>Chapter 4</head>
+
+                <p> When Jane and Elizabeth were alone, the former, who had been cautious in her praise of <name type="person" key="mr_bingley">Mr.
+                        Bingley</name> before, expressed to her sister just how very much she admired him.</p>
+
+                <p>"He is just what a young man ought to be," said she, "sensible, good-humoured, lively; and I never saw such happy manners!--so much
+                    ease, with such perfect good breeding!"</p>
+
+                <p>"He is also handsome," replied Elizabeth, "which a young man ought likewise to be, if he possibly can. His character is thereby
+                    complete."</p>
+
+                <p>"I was very much flattered by his asking me to dance a second time. I did not expect such a compliment."</p>
+
+                <p>"Did not you? I did for you. But that is one great difference between us. Compliments always take <emph>you</emph> by surprise, and
+                        <emph>me</emph> never. What could be more natural than his asking you again? He could not help seeing that you were about five
+                    times as pretty as every other woman in the room. No thanks to his gallantry for that. Well, he certainly is very agreeable, and I
+                    give you leave to like him. You have liked many a stupider person."</p>
+
+                <p>"Dear Lizzy!"</p>
+
+                <p>"Oh! you are a great deal too apt, you know, to like people in general. You never see a fault in anybody. All the world are good
+                    and agreeable in your eyes. I never heard you speak ill of a human being in your life."</p>
+
+                <p>"I would not wish to be hasty in censuring anyone; but I always speak what I think."</p>
+
+                <p>"I know you do; and it is <emph>that</emph> which makes the wonder. With <emph>your</emph> good sense, to be so honestly blind to
+                    the follies and nonsense of others! Affectation of candour is common enough--one meets with it everywhere. But to be candid
+                    without ostentation or design--to take the good of everybody's character and make it still better, and say nothing of the
+                    bad--belongs to you alone. And so you like this man's sisters, too, do you? Their manners are not equal to his."</p>
+
+                <p>"Certainly not--at first. But they are very pleasing women when you converse with them. Miss Bingley is to live with her brother,
+                    and keep his house; and I am much mistaken if we shall not find a very charming neighbour in her."</p>
+
+                <p>Elizabeth listened in silence, but was not convinced; their behaviour at the assembly had not been calculated to please in general;
+                    and with more quickness of observation and less pliancy of temper than her sister, and with a judgement too unassailed by any
+                    attention to herself, she was very little disposed to approve them. They were in fact very fine ladies; not deficient in good
+                    humour when they were pleased, nor in the power of making themselves agreeable when they chose it, but proud and conceited. They
+                    were rather handsome, had been educated in one of the first private seminaries in town, had a fortune of twenty thousand pounds,
+                    were in the habit of spending more than they ought, and of associating with people of rank, and were therefore in every respect
+                    entitled to think well of themselves, and meanly of others. They were of a respectable family in the north of England; a
+                    circumstance more deeply impressed on their memories than that their brother's fortune and their own had been acquired by trade.</p>
+
+
+                <p><name type="person" key="mr_bingley">Mr. Bingley</name> inherited property to the amount of nearly a hundred thousand pounds from his
+                    father, who had intended to purchase an estate, but did not live to do it. <name type="person" key="mr_bingley">Mr. Bingley</name>
+                    intended it likewise, and sometimes made choice of his county; but as he was now provided with a good house and the liberty of a
+                    manor, it was doubtful to many of those who best knew the easiness of his temper, whether he might not spend the remainder of his
+                    days at Netherfield, and leave the next generation to purchase.</p>
+
+                <p>His sisters were anxious for his having an estate of his own; but, though he was now only established as a tenant, Miss Bingley was
+                    by no means unwilling to preside at his table--nor was Mrs. Hurst, who had married a man of more fashion than fortune, less
+                    disposed to consider his house as her home when it suited her. <name type="person" key="mr_bingley">Mr. Bingley</name> had not been
+                    of age two years, when he was tempted by an accidental recommendation to look at Netherfield House. He did look at it, and into it
+                    for half-an-hour--was pleased with the situation and the principal rooms, satisfied with what the owner said in its praise, and
+                    took it immediately.</p>
+
+                <p>Between him and Darcy there was a very steady friendship, in spite of great opposition of character. Bingley was endeared to Darcy
+                    by the easiness, openness, and ductility of his temper, though no disposition could offer a greater contrast to his own, and
+                    though with his own he never appeared dissatisfied. On the strength of Darcy's regard, Bingley had the firmest reliance, and of
+                    his judgement the highest opinion. In understanding, Darcy was the superior. Bingley was by no means deficient, but Darcy was
+                    clever. He was at the same time haughty, reserved, and fastidious, and his manners, though well-bred, were not inviting. In that
+                    respect his friend had greatly the advantage. Bingley was sure of being liked wherever he appeared, Darcy was continually giving
+                    offense.</p>
+
+                <p>The manner in which they spoke of the Meryton assembly was sufficiently characteristic. Bingley had never met with more pleasant
+                    people or prettier girls in his life; everybody had been most kind and attentive to him; there had been no formality, no
+                    stiffness; he had soon felt acquainted with all the room; and, as to Miss Bennet, he could not conceive an angel more beautiful.
+                    Darcy, on the contrary, had seen a collection of people in whom there was little beauty and no fashion, for none of whom he had
+                    felt the smallest interest, and from none received either attention or pleasure. Miss Bennet he acknowledged to be pretty, but she
+                    smiled too much.</p>
+
+                <p><name type="person" key="mrs_hurst">Mrs. Hurst</name> and her sister allowed it to be so--but still they admired her and liked her,
+                    and pronounced her to be a sweet girl, and one whom they would not object to know more of.<name type="person" key="miss_bennet"
+                        >Miss Bennet</name> was therefore established as a sweet girl, and their brother felt authorized by such commendation to think
+                    of her as he chose.</p>
+
+            </div>
+        </body>
+
+        <back>
+            <!-- Any back matter in the original document would be indicated here. Note that this is for back matter *from* the original ... any back matter
+            that we want to supply for the electronic version would go in the XSL document. But we can indicate the placement etc. of generated indexes ... -->
+
+            <divGen type="names" />
+
+            <!-- Another thing that you would want in the back matter is interpretations. Interpretations are how you keep track of things that the TEI doesn't
+                provide any explicit markup for. Here, you define what interpretations are possible ... you use the "ana" attribute in the text itself to indicate 
+                which interpretations apply to what part of the text. (Your can use the <seg> tag to create segments, just like you would use <span> in HTML
+            
+            See http://www.tei-c.org/release/doc/tei-p5-exemplars/html/teilite.doc.html#body.1_div.15_div.2 for more info.
+            
+            -->
+
+                <interpGrp type="theme">
+                    <interp xml:id="beauty">Beauty</interp>
+                    <interp xml:id="wealth">Wealth</interp>
+                    <interp xml:id="dancing">Dancing</interp>
+                    <interp xml:id="love">Love</interp>
+                    <interp xml:id="marriage">Marriage</interp>
+                    <interp xml:id="temperment">Temperment</interp>
+                </interpGrp>
+        </back>
+    </text>
+</notTEI>
