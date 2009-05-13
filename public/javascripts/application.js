@@ -71,6 +71,12 @@ isc.TEI.addProperties({
               }
             },
             {
+              title: "Glossary",
+              action: function() {
+                isc.TEI.app.teiDocument.showGlossary();
+              }
+            },
+            {
               title: "Document Tree",
               action: function() {
                 isc.TEI.app.teiDocument.showDOMGrid();
@@ -272,6 +278,24 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
+  showGlossary: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.GlossaryPanel.create({
+          height: "100%",
+          width: "100%",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
   showInterpretationsKWIC: function() {
     isc.Window.create({
       autoCenter: true,
@@ -393,6 +417,10 @@ isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
       this.dialog
     ]);
   }
+});
+
+isc.defineClass("GlossaryPanel", isc.XSLTFlow).addProperties({
+  xsltName: "glossary"
 });
 
 isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
