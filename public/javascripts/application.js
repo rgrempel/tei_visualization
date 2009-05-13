@@ -83,6 +83,12 @@ isc.TEI.addProperties({
               }
             },
             {
+              title: "Header",
+              action: function() {
+                isc.TEI.app.teiDocument.showHeader();
+              }
+            },
+            {
               title: "Document Tree",
               action: function() {
                 isc.TEI.app.teiDocument.showDOMGrid();
@@ -302,6 +308,24 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
+  showHeader: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.HeaderPanel.create({
+          height: "100%",
+          width: "100%",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
   showNotes: function() {
     isc.Window.create({
       autoCenter: true,
@@ -445,6 +469,10 @@ isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
 
 isc.defineClass("GlossaryPanel", isc.XSLTFlow).addProperties({
   xsltName: "glossary"
+});
+
+isc.defineClass("HeaderPanel", isc.XSLTFlow).addProperties({
+  xsltName: "teiHeader"
 });
 
 isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
