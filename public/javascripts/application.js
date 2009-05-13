@@ -206,7 +206,6 @@ isc.TEI.addProperties({
 isc.defineClass("TEIDocument", isc.Window).addProperties({
   record: null,
   xmlDocument: null,
-  dataSources: {},
   maximized: true,
   keepInParentRect: true,
   showMaximizeButton: true,
@@ -216,12 +215,12 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 
     this.setTitle(this.record.title);
 
-    isc.addProperties(this.dataSources, {
+    this.dataSources = {
       tocTree: isc.TocTreeDataSource.create(),
       index: isc.IndexDataSource.create(),
       names: isc.NamesDataSource.create(),
       interpretations: isc.InterpsDataSource.create()
-    });
+    };
 
     this.mainPanel = isc.XSLTFlow.create({
       xsltName: "main",
