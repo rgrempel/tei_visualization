@@ -77,6 +77,12 @@ isc.TEI.addProperties({
               }
             },
             {
+              title: "Notes",
+              action: function() {
+                isc.TEI.app.teiDocument.showNotes();
+              }
+            },
+            {
               title: "Document Tree",
               action: function() {
                 isc.TEI.app.teiDocument.showDOMGrid();
@@ -296,6 +302,24 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
+  showNotes: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.NotesPanel.create({
+          height: "100%",
+          width: "100%",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
   showInterpretationsKWIC: function() {
     isc.Window.create({
       autoCenter: true,
@@ -421,6 +445,10 @@ isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
 
 isc.defineClass("GlossaryPanel", isc.XSLTFlow).addProperties({
   xsltName: "glossary"
+});
+
+isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
+  xsltName: "notes"
 });
 
 isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
