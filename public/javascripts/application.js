@@ -59,6 +59,12 @@ isc.TEI.addProperties({
               }
             },
             {
+              title: "Index KWIC",
+              action: function() {
+                isc.TEI.app.teiDocument.showIndexKWIC();
+              }
+            },
+            {
               title: "Interpretations KWIC",
               action: function() {
                 isc.TEI.app.teiDocument.showInterpretationsKWIC();
@@ -152,6 +158,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 
     isc.addProperties(this.dataSources, {
       tocTree: isc.TocTreeDataSource.create(),
+      index: isc.IndexDataSource.create(),
       names: isc.NamesDataSource.create(),
       interpretations: isc.InterpsDataSource.create()
     });
@@ -246,6 +253,23 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
 
     grid.setRootElement(this.xmlDocument.documentElement);
+  },
+
+  showIndexKWIC: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.IndexKWICPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
   },
 
   showInterpretationsKWIC: function() {
@@ -371,6 +395,36 @@ isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
   }
 });
 
+isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.IndexGrid.create({
+      dataSource: this.teiDocument.dataSources["index"],
+      width: "20%",
+      height: "100%",
+      parent: this,
+      selectionChanged: function(record, state) {
+        if (state) this.parent.kwic.setParams({key: record.key});
+      }
+    }),
+
+    this.kwic = isc.XSLTFlow.create({
+      xmlDocument: this.teiDocument.xmlDocument,
+      xsltName: "indexKwic",
+      showEdges: true,
+      width: "80%",
+      height: "100%"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.kwic
+    ]);
+  }
+});
+
 // This is the analysis panel for names
 isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
   teiDocument: null,
@@ -432,6 +486,16 @@ isc.defineClass("InterpsKWICPanel", isc.HLayout).addProperties({
   }
 });
 
+isc.defineClass("IndexDataSource", "XSLTDataSource").addProperties({
+  xsltName: "termList",
+  recordXPath: "/default:terms/default:term",
+  fields: [
+    {name: "text", type: "text", title: "Term"},
+    {name: "key", type: "text", primaryKey: true},
+    {name: "parentKey", type: "text", foreignKey: "key"}
+  ]
+});
+
 isc.defineClass("TocTreeDataSource", "XSLTDataSource").addProperties({
   xsltName: "tocTree",
   recordXPath: "/default:toc/default:tocentry",
@@ -448,6 +512,14 @@ isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
   loadDataOnDemand: false,
   fields: [
     {name: "text", treeField: true}
+  ]
+});
+
+isc.defineClass("IndexGrid", isc.TreeGrid).addProperties({
+  autoFetchData: true,
+  loadDataOnDemand: false,
+  fields: [
+    {name: "text", treeField: true},
   ]
 });
 
