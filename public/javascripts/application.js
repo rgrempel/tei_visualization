@@ -97,6 +97,18 @@ isc.TEI.addProperties({
           ]
         },
         {
+          title: "Counting",
+          width: 100,
+          data: [
+            {
+              title: "Interpretations / Names (Contains/Contained)",
+              action: function() {
+                isc.TEI.app.teiDocument.showInterpNames();
+              }
+            }
+          ]
+        },
+        {
           title: "Debug",
           width: 100,
           data: [
@@ -271,6 +283,23 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
 
     grid.setRootElement(this.xmlDocument.documentElement);
+  },
+
+  showInterpNames: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.InterpNamesPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
   },
 
   showIndexKWIC: function() {
@@ -536,6 +565,36 @@ isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
     this.addMembers([
       this.grid,
       this.kwic
+    ]);
+  }
+});
+
+isc.defineClass("InterpNamesPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.InterpsGrid.create({
+      dataSource: this.teiDocument.dataSources["interpretations"],
+      width: "20%",
+      height: "100%",
+      parent: this,
+      selectionChanged: function(record, state) {
+        if (state) this.parent.names.setParams({key: record.key});
+      }
+    }),
+
+    this.names = isc.XSLTFlow.create({
+      xmlDocument: this.teiDocument.xmlDocument,
+      xsltName: "interpNames",
+      showEdges: true,
+      width: "80%",
+      height: "100%"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.names
     ]);
   }
 });

@@ -18,6 +18,9 @@
   <xsl:key name="namesByKey" match="tei:name" use="@key"/>
   <xsl:key name="namesAndRSAndSaidByKey" match="tei:name | tei:rs | tei:said" use="@key | @who"/>
 
+  <!-- This counts names and rs for each interp, where the name or rs either
+        has the relevant ana, or an ancestor or descendant does. -->
+
   <xsl:template match="/">
     <div class="names">
       <xsl:choose>
