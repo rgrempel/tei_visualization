@@ -109,6 +109,36 @@ isc.TEI.addProperties({
           ]
         },
         {
+          title: "Distribution",
+          width: 100,
+          data: [
+            {
+              title: "Names",
+              action: function() {
+                isc.TEI.app.teiDocument.showDistributionNames();
+              }
+            },
+            {
+              title: "Titles",
+              action: function() {
+                isc.TEI.app.teiDocument.showDistributionTitles();
+              }
+            },
+            {
+              title: "Interpretations",
+              action: function() {
+                isc.TEI.app.teiDocument.showDistributionInterpretations();
+              }
+            },
+            {
+              title: "Everything",
+              action: function() {
+                isc.TEI.app.teiDocument.showDistributionEverything();
+              }
+            }
+          ]
+        },
+        {
           title: "Debug",
           width: 100,
           data: [
@@ -390,6 +420,74 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
+  showDistributionNames: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.DistributionNamesPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
+  showDistributionTitles: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.DistributionTitlesPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
+  showDistributionInterpretations: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.DistributionInterpretationsPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
+  showDistributionEverything: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.DistributionEverythingPanel.create({
+          height: "100%",
+          teiDocument: this
+        })
+      ]
+    }).show();
+  },
+
   showNamesKWIC: function() {
     isc.Window.create({
       autoCenter: true,
@@ -506,6 +604,24 @@ isc.defineClass("HeaderPanel", isc.XSLTFlow).addProperties({
 
 isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
   xsltName: "notes"
+});
+
+isc.defineClass("DistributionNamesPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.ListGrid.create();
+
+    this.graph = isc.Label.create({
+      defaultValue: "Graph Here"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.graph
+    ]);
+  }
 });
 
 isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
