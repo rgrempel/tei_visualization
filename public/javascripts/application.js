@@ -71,6 +71,18 @@ isc.TEI.addProperties({
               }
             }
           ]
+        },
+        {
+          title: "Debug",
+          width: 100,
+          data: [
+            {
+              title: "Show Console",
+              action: function() {
+                isc.showConsole();
+              }
+            }
+          ]
         }
       ]
     });
