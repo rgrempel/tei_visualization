@@ -12,12 +12,12 @@
         
     <xsl:template match="/">
         <toc>
-            <xsl:apply-templates select="//tei:div[not(ancestor::tei:div)][not(@rend='analysis')]" />
+            <xsl:apply-templates select="//tei:div[not(@rend='analysis')]" />
         </toc>
     </xsl:template>
 
     <xsl:template match="tei:div">
-      <tocentry loaded="true">
+      <tocentry>
           <xsl:attribute name="text">
               <xsl:value-of select="tei:head" />
               <xsl:if test="tei:lg[1]/tei:l[1]">
@@ -31,11 +31,9 @@
           <xsl:attribute name="n">
               <xsl:apply-templates select="." mode="n" />
           </xsl:attribute>
-          <xsl:if test="tei:div[not(@rend='analysis')]">
-            <children>
-              <xsl:apply-templates select="tei:div[not(@rend='analysis')]" />
-            </children>
-          </xsl:if>
+          <xsl:attribute name="parentID">
+              <xsl:apply-templates select="ancestor::tei:div[1]" mode="id" />
+          </xsl:attribute>
       </tocentry>
     </xsl:template>
 </xsl:stylesheet>

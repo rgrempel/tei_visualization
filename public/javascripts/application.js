@@ -759,9 +759,9 @@ isc.defineClass("TocTreeDataSource", "XSLTDataSource").addProperties({
   recordXPath: "/default:toc/default:tocentry",
   fields: [
     {name: "text", type: "text", title: "Title"},
-    {name: "id", type: "text", title: "ID"},
+    {name: "id", type: "text", title: "ID", primaryKey: true},
     {name: "n", type: "text", title: "n"},
-    {name: "children", childrenField: true}
+    {name: "parentID", type: "text", foreignKey: "id"}
   ]
 });
 
