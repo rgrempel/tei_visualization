@@ -328,160 +328,102 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
   },
 
   showDOMGrid: function() {
-    var grid =  isc.DOMGrid.create({
-      width: "100%",
-      height: "100%"
-    });
-
-    isc.AnalysisWindow.create({
-      analysisPanel: grid
-    }).show();
-
-    grid.setRootElement(this.xmlDocument.documentElement);
+    isc.DOMGridPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showInterpNames: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.InterpNamesPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.InterpNamesPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showIndexKWIC: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.IndexKWICPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.IndexKWICPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showGlossary: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.GlossaryPanel.create({
-        height: "100%",
-        width: "100%",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.GlossaryPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showHeader: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.HeaderPanel.create({
-        height: "100%",
-        width: "100%",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.HeaderPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showNotes: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.NotesPanel.create({
-        height: "100%",
-        width: "100%",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.NotesPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showAllInterpNames: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.XSLTFlowPanel.create({
-        height: "100%",
-        width: "100%",
-        xsltName: "interpAllNames",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.XSLTFlowPanel.create({
+      xsltName: "interpAllNames",
+      teiDocument: this
+    }).showInWindow();
   },
 
   showInterpInterpProximity: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.XSLTFlowPanel.create({
-        height: "100%",
-        width: "100%",
-        xsltName: "interpInterpXref",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.XSLTFlowPanel.create({
+      xsltName: "interpInterpXref",
+      teiDocument: this
+    }).showInWindow();
   },
 
   showInterpNamesProximity: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.XSLTFlowPanel.create({
-        height: "100%",
-        width: "100%",
-        xsltName: "interpNamesProximity",
-        xmlDocument: this.xmlDocument
-      })
-    }).show();
+    isc.XSLTFlowPanel.create({
+      xsltName: "interpNamesProximity",
+      teiDocument: this
+    }).showInWindow();
   },
 
   showInterpretationsKWIC: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.InterpsKWICPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.InterpsKWICPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showDistributionNames: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.DistributionNamesPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.DistributionNamesPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showDistributionDialog: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.DistributionDialogPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.DistributionDialogPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showDistributionInterpretations: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.DistributionInterpretationsPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.DistributionInterpretationsPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showDistributionEverything: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.DistributionEverythingPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.DistributionEverythingPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showNamesKWIC: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.NamesKWICPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.NamesKWICPanel.create({
+      teiDocument: this
+    }).showInWindow();
   },
 
   showNamesDialog: function() {
-    isc.AnalysisWindow.create({
-      analysisPanel: isc.NamesDialogPanel.create({
-        height: "100%",
-        teiDocument: this
-      })
-    }).show();
+    isc.NamesDialogPanel.create({
+      teiDocument: this
+    }).showInWindow();
   }
 });
 
@@ -545,7 +487,34 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
   ]
 });
 
-isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
+// This is the superclass for all Analysis Panels.
+isc.defineClass("AnalysisPanel", isc.Canvas).addProperties({
+  width: "100%",
+  height: "100%",
+  showInWindow: function() {
+    isc.AnalysisWindow.create({
+      analysisPanel: this
+    }).show();
+  }
+});
+
+isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid =  isc.DOMGrid.create({
+      width: "100%",
+      height: "100%"
+    });
+
+    this.grid.setRootElement(this.teiDocument.xmlDocument.documentElement);
+
+    this.addChild(this.grid);
+  }
+});
+
+isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -568,31 +537,55 @@ isc.defineClass("NamesDialogPanel", isc.HLayout).addProperties({
       height: "100%"
     });
 
-    this.addMembers([
-      this.grid,
-      this.dialog
-    ]);
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.dialog
+        ]
+      })
+    );
   }
 });
 
-isc.defineClass("GlossaryPanel", isc.XSLTFlow).addProperties({
+isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
+  teiDocuoment: null,
+  xsltName: null,
+  width: "100%",
+  defaultHeight: "100%",
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.addChild(
+      isc.XSLTFlow.create({
+        defaultWidth: "100%",
+        defaultHeight: "100%",
+        xsltName: this.xsltName,
+        xmlDocument: this.teiDocument.xmlDocument
+      })
+    )
+  }
+});
+
+isc.defineClass("GlossaryPanel", isc.XSLTFlowPanel).addProperties({
   xsltName: "glossary"
 });
 
-isc.defineClass("HeaderPanel", isc.XSLTFlow).addProperties({
+isc.defineClass("HeaderPanel", isc.XSLTFlowPanel).addProperties({
   xsltName: "teiHeader"
 });
 
-isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
+isc.defineClass("NotesPanel", isc.XSLTFlowPanel).addProperties({
   xsltName: "notes"
 });
 
-isc.defineClass("XSLTFlowPanel", isc.XSLTFlow).addProperties({
-
-});
-
-isc.defineClass("DistributionDialogPanel", isc.HLayout).addProperties({
+isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
+  xsltName: null,
+
   initWidget: function() {
     this.Super("initWidget", arguments);
 
@@ -600,7 +593,7 @@ isc.defineClass("DistributionDialogPanel", isc.HLayout).addProperties({
       autoFetchData: true,
       dataSource: isc.DistributionCountDataSource.create({
         xmlDocument: this.teiDocument.xmlDocument,
-        xsltName: "dialogCount",
+        xsltName: this.xsltName,
         chapterFields: this.teiDocument.chapterFields
       })
     });
@@ -609,89 +602,36 @@ isc.defineClass("DistributionDialogPanel", isc.HLayout).addProperties({
       defaultValue: "Graph Here"
     });
 
-    this.addMembers([
-      this.grid,
-      this.graph
-    ]);
-  }
-});
-
-isc.defineClass("DistributionNamesPanel", isc.HLayout).addProperties({
-  teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.ListGrid.create({
-      autoFetchData: true,
-      dataSource: isc.DistributionCountDataSource.create({
-        xmlDocument: this.teiDocument.xmlDocument,
-        xsltName: "namesCount",
-        chapterFields: this.teiDocument.chapterFields
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.graph
+        ]
       })
-    });
-
-    this.graph = isc.Label.create({
-      defaultValue: "Graph Here"
-    });
-
-    this.addMembers([
-      this.grid,
-      this.graph
-    ]);
+    );
   }
 });
 
-isc.defineClass("DistributionInterpretationsPanel", isc.HLayout).addProperties({
-  teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.ListGrid.create({
-      autoFetchData: true,
-      dataSource: isc.DistributionCountDataSource.create({
-        xmlDocument: this.teiDocument.xmlDocument,
-        xsltName: "interpretationCount",
-        chapterFields: this.teiDocument.chapterFields
-      })
-    });
-
-    this.graph = isc.Label.create({
-      defaultValue: "Graph Here"
-    });
-
-    this.addMembers([
-      this.grid,
-      this.graph
-    ]);
-  }
+isc.defineClass("DistributionDialogPanel", isc.DistributionPanel).addProperties({
+  xsltName: "dialogCount"
 });
 
-isc.defineClass("DistributionEverythingPanel", isc.HLayout).addProperties({
-  teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.ListGrid.create({
-      autoFetchData: true,
-      dataSource: isc.DistributionCountDataSource.create({
-        xmlDocument: this.teiDocument.xmlDocument,
-        xsltName: "everythingCount",
-        chapterFields: this.teiDocument.chapterFields
-      })
-    });
-
-    this.graph = isc.Label.create({
-      defaultValue: "Graph Here"
-    });
-
-    this.addMembers([
-      this.grid,
-      this.graph
-    ]);
-  }
+isc.defineClass("DistributionNamesPanel", isc.DistributionPanel).addProperties({
+  xsltName: "namesCount"
 });
 
-isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
+isc.defineClass("DistributionInterpretationsPanel", isc.DistributionPanel).addProperties({
+  xsltName: "interpretationCount"
+});
+
+isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addProperties({
+  xsltName: "everythingCount"
+});
+
+isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -714,15 +654,21 @@ isc.defineClass("IndexKWICPanel", isc.HLayout).addProperties({
       height: "100%"
     });
 
-    this.addMembers([
-      this.grid,
-      this.kwic
-    ]);
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.kwic
+        ]
+      })
+    );
   }
 });
 
 // This is the analysis panel for names
-isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
+isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -745,14 +691,20 @@ isc.defineClass("NamesKWICPanel", isc.HLayout).addProperties({
       height: "100%"
     });
 
-    this.addMembers([
-      this.grid,
-      this.kwic
-    ]);
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.kwic
+        ]
+      })
+    );
   }
 });
 
-isc.defineClass("InterpNamesPanel", isc.HLayout).addProperties({
+isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -775,14 +727,20 @@ isc.defineClass("InterpNamesPanel", isc.HLayout).addProperties({
       height: "100%"
     });
 
-    this.addMembers([
-      this.grid,
-      this.names
-    ]);
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.names
+        ]
+      })
+    );
   }
 });
 
-isc.defineClass("InterpsKWICPanel", isc.HLayout).addProperties({
+isc.defineClass("InterpsKWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -805,10 +763,16 @@ isc.defineClass("InterpsKWICPanel", isc.HLayout).addProperties({
       height: "100%"
     });
 
-    this.addMembers([
-      this.grid,
-      this.kwic
-    ]);
+    this.addChild(
+      isc.HLayout.create({
+        width: "100%",
+        defaultHeight: "100%",
+        members: [
+          this.grid,
+          this.kwic
+        ]
+      })
+    );
   }
 });
 
