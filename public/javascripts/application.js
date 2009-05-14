@@ -101,9 +101,27 @@ isc.TEI.addProperties({
           width: 100,
           data: [
             {
-              title: "Interpretations / Names (Contains/Contained)",
+              title: "Interpretations / Names (Containment)",
               action: function() {
                 isc.TEI.app.teiDocument.showInterpNames();
+              }
+            },
+            {
+              title: "All Interpretations / Names (Containment)",
+              action: function() {
+                isc.TEI.app.teiDocument.showAllInterpNames();
+              }
+            },
+            {
+              title: "Interpretations / Names (Proximity)",
+              action: function() {
+                isc.TEI.app.teiDocument.showInterpNamesProximity();
+              }
+            },
+            {
+              title: "Interpretations / Interpretations (Proximity)",
+              action: function() {
+                isc.TEI.app.teiDocument.showInterpInterpProximity();
               }
             }
           ]
@@ -418,6 +436,63 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
+  showAllInterpNames: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.XSLTFlowPanel.create({
+          height: "100%",
+          width: "100%",
+          xsltName: "interpAllNames",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
+  showInterpInterpProximity: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.XSLTFlowPanel.create({
+          height: "100%",
+          width: "100%",
+          xsltName: "interpInterpXref",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
+  showInterpNamesProximity: function() {
+    isc.Window.create({
+      autoCenter: true,
+      width: 800,
+      height: 400,
+      closeClick: function() {
+        this.markForDestroy();
+      },
+      items: [
+        isc.XSLTFlowPanel.create({
+          height: "100%",
+          width: "100%",
+          xsltName: "interpNamesProximity",
+          xmlDocument: this.xmlDocument
+        })
+      ]
+    }).show();
+  },
+
   showInterpretationsKWIC: function() {
     isc.Window.create({
       autoCenter: true,
@@ -622,6 +697,10 @@ isc.defineClass("HeaderPanel", isc.XSLTFlow).addProperties({
 
 isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
   xsltName: "notes"
+});
+
+isc.defineClass("XSLTFlowPanel", isc.XSLTFlow).addProperties({
+
 });
 
 isc.defineClass("DistributionDialogPanel", isc.HLayout).addProperties({
