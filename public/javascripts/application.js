@@ -333,283 +333,171 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       height: "100%"
     });
 
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 600,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        grid
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: grid
     }).show();
 
     grid.setRootElement(this.xmlDocument.documentElement);
   },
 
   showInterpNames: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.InterpNamesPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.InterpNamesPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showIndexKWIC: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.IndexKWICPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.IndexKWICPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showGlossary: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.GlossaryPanel.create({
-          height: "100%",
-          width: "100%",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.GlossaryPanel.create({
+        height: "100%",
+        width: "100%",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showHeader: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.HeaderPanel.create({
-          height: "100%",
-          width: "100%",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.HeaderPanel.create({
+        height: "100%",
+        width: "100%",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showNotes: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.NotesPanel.create({
-          height: "100%",
-          width: "100%",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.NotesPanel.create({
+        height: "100%",
+        width: "100%",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showAllInterpNames: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.XSLTFlowPanel.create({
-          height: "100%",
-          width: "100%",
-          xsltName: "interpAllNames",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.XSLTFlowPanel.create({
+        height: "100%",
+        width: "100%",
+        xsltName: "interpAllNames",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showInterpInterpProximity: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.XSLTFlowPanel.create({
-          height: "100%",
-          width: "100%",
-          xsltName: "interpInterpXref",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.XSLTFlowPanel.create({
+        height: "100%",
+        width: "100%",
+        xsltName: "interpInterpXref",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showInterpNamesProximity: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.XSLTFlowPanel.create({
-          height: "100%",
-          width: "100%",
-          xsltName: "interpNamesProximity",
-          xmlDocument: this.xmlDocument
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.XSLTFlowPanel.create({
+        height: "100%",
+        width: "100%",
+        xsltName: "interpNamesProximity",
+        xmlDocument: this.xmlDocument
+      })
     }).show();
   },
 
   showInterpretationsKWIC: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.InterpsKWICPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.InterpsKWICPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showDistributionNames: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.DistributionNamesPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.DistributionNamesPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showDistributionDialog: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.DistributionDialogPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.DistributionDialogPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showDistributionInterpretations: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.DistributionInterpretationsPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.DistributionInterpretationsPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showDistributionEverything: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.DistributionEverythingPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.DistributionEverythingPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showNamesKWIC: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.NamesKWICPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.NamesKWICPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
   },
 
   showNamesDialog: function() {
-    isc.Window.create({
-      autoCenter: true,
-      width: 800,
-      height: 400,
-      closeClick: function() {
-        this.markForDestroy();
-      },
-      items: [
-        isc.NamesDialogPanel.create({
-          height: "100%",
-          teiDocument: this
-        })
-      ]
+    isc.AnalysisWindow.create({
+      analysisPanel: isc.NamesDialogPanel.create({
+        height: "100%",
+        teiDocument: this
+      })
     }).show();
+  }
+});
+
+isc.defineClass("AnalysisWindow", isc.Window).addProperties({
+  autoCenter: true,
+  width: 800,
+  height: 400,
+  analysisPanel: null,
+
+  closeClick: function() {
+    this.markForDestroy();
+  },
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    this.addItem(this.analysisPanel);
   }
 });
 
