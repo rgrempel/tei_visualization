@@ -534,9 +534,12 @@ isc.defineClass("InterpsDataSource", "XSLTDataSource").addProperties({
 
 isc.defineClass("InterpsGrid", isc.ListGrid).addProperties({
   autoFetchData: true,
+  groupIcon: "[SKINIMG]/TreeGrid/folder.png",
+  groupLeadingIndent: 0,
   groupByField: "group",
   groupStartOpen: "none",
   fields: [
+    {name: "icon", type: "icon", align: "right", width: 36, canResize: false, cellIcon: "[SKINIMG]/TreeGrid/file.png"},
     {name: "text", title: "Interpretation", width: "*"},
     {name: "group", title: "Group", width: "20"}
   ]
