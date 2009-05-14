@@ -17,21 +17,21 @@
     <xsl:template match="/">
         <xsl:variable name="firstNames"
             select="//tei:name[generate-id(.) = generate-id(key('namesByKey', @key))]"/>
-        <things>
-           <xsl:variable name="things">
+        <keys>
+           <xsl:variable name="keys">
                 <xsl:apply-templates select="$firstNames" mode="references"/>
                 <xsl:apply-templates select="$firstNames" mode="dialog"/>
                 <xsl:apply-templates select="//tei:interp"/>
            </xsl:variable>
-           <xsl:for-each select="exsl:node-set($things)/thing">
+           <xsl:for-each select="exsl:node-set($keys)/key">
                 <xsl:sort select="@total" data-type="number" order="descending"/>
                 <xsl:copy-of select="."/>
             </xsl:for-each>
-        </things>
+        </keys>
     </xsl:template>
 
     <xsl:template match="tei:interp">
-        <thing kind="interpretation" key="{@xml:id}" total="{count(key('ana', @xml:id))}">
+        <key kind="interpretation" key="{@xml:id}" total="{count(key('ana', @xml:id))}">
             <xsl:attribute name="text">
                 <xsl:value-of select="."/>
                 <xsl:text> (i)</xsl:text>
@@ -53,11 +53,11 @@
             </xsl:for-each>
             <xsl:variable name="orphans" select="count(key('ana', $key)[not(ancestor::tei:div)])"/>
             <div id="" title="other" n="0" count="{$orphans}"/>
-        </thing>
+        </key>
     </xsl:template>
 
     <xsl:template match="tei:name" mode="references">
-        <thing key="{@key}" kind="reference" type="{@type}"
+        <key key="{@key}" kind="reference" type="{@type}"
             total="{count(key('namesAndRSByKey', @key))}">
             <xsl:attribute name="text">
                 <xsl:apply-templates select="." mode="canonical"/>
@@ -77,11 +77,11 @@
             <xsl:variable name="orphans"
                 select="count(key('namesAndRSByKey', $key)[not(ancestor::tei:div)])"/>
             <div id="" title="other" n="0" count="{$orphans}"/>
-        </thing>
+        </key>
     </xsl:template>
 
     <xsl:template match="tei:name" mode="dialog">
-        <thing key="{@key}" kind="dialog" type="{@type}" total="{count(key('saidByWho', @key))}">
+        <key key="{@key}" kind="dialog" type="{@type}" total="{count(key('saidByWho', @key))}">
             <xsl:attribute name="text">
                 <xsl:apply-templates select="." mode="canonical"/>
                 <xsl:text> (d)</xsl:text>
@@ -101,6 +101,6 @@
             <xsl:variable name="orphans"
                 select="count(key('saidByWho', $key)[not(ancestor::tei:div)])"/>
             <div id="" title="other" n="0" count="{$orphans}"/>
-        </thing>
+        </key>
     </xsl:template>
 </xsl:stylesheet>

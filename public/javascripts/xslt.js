@@ -178,8 +178,12 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
     this.checkRequestQueue();
   },
 
+  readyForRequests: function() {
+    return this.xmlDocument && this.xsltProcessor;
+  },
+
   checkRequestQueue: function() {
-    if (this.xmlDocument && this.xsltProcessor && this.requestQueue && this.requestQueue.length > 0) {
+    if (this.readyForRequests() && this.requestQueue && this.requestQueue.length > 0) {
       var self = this;
       this.requestQueue.map(function (dsRequest) {
         self.delayCall("executeRequest", [dsRequest]);
@@ -189,7 +193,7 @@ isc.defineClass("XSLTDataSource","DataSource").addProperties({
   },
 
   transformRequest: function(dsRequest) {
-    if (this.xmlDocument && this.xsltProcessor) {
+    if (this.readyForRequests()) {
       this.delayCall("executeRequest", [dsRequest]);
     } else {
       if (!this.requestQueue) this.requestQueue = [];

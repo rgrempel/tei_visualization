@@ -13,15 +13,15 @@
     <xsl:key name="namesAndRSByKey" match="tei:name | tei:rs" use="@key" />
 
     <xsl:template match="/">
-        <names>
+        <keys>
             <xsl:apply-templates select="//tei:name[generate-id(.) = generate-id(key('namesByKey', @key))]">
                 <xsl:sort select="count(key('namesAndRSByKey', @key))" data-type="number" order="descending" />
             </xsl:apply-templates>
-        </names>
+        </keys>
     </xsl:template>
 
     <xsl:template match="tei:name">
-        <name key="{@key}" type="{@type}" total="{count(key('namesAndRSByKey', @key))}">
+        <key key="{@key}" type="{@type}" total="{count(key('namesAndRSByKey', @key))}">
             <xsl:attribute name="text">
                 <xsl:apply-templates select="." mode="canonical" />
             </xsl:attribute>
@@ -38,6 +38,6 @@
             </xsl:for-each>
             <xsl:variable name="orphans" select="count(key('namesAndRSByKey', $key)[not(ancestor::tei:div)])" />
             <div id="" title="other" n="0" count="{$orphans}" />
-        </name>
+        </key>
     </xsl:template>
 </xsl:stylesheet>

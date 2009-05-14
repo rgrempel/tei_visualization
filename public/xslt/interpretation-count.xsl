@@ -13,13 +13,13 @@
     <xsl:key name="ana" match="//*[@ana]" use="str:tokenize(@ana,'# ')" />
 
     <xsl:template match="/">
-        <interpretations>
+        <keys>
             <xsl:apply-templates select="//tei:interp"/>
-        </interpretations>
+        </keys>
     </xsl:template>
 
     <xsl:template match="tei:interp">
-        <interpretation key="{@xml:id}" text="{.}" total="{count(key('ana', @xml:id))}">
+        <key key="{@xml:id}" text="{.}" total="{count(key('ana', @xml:id))}">
             <xsl:attribute name="type">
                 <xsl:apply-templates select="." mode="type" />
             </xsl:attribute>
@@ -36,6 +36,6 @@
             </xsl:for-each>
             <xsl:variable name="orphans" select="count(key('ana', $key)[not(ancestor::tei:div)])" />
             <div id="" title="other" n="0" count="{$orphans}" />
-        </interpretation>
+        </key>
     </xsl:template>
 </xsl:stylesheet>

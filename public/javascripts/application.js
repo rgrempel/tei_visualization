@@ -119,9 +119,9 @@ isc.TEI.addProperties({
               }
             },
             {
-              title: "Titles",
+              title: "Dialog",
               action: function() {
-                isc.TEI.app.teiDocument.showDistributionTitles();
+                isc.TEI.app.teiDocument.showDistributionDialog();
               }
             },
             {
@@ -209,6 +209,11 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
   maximized: true,
   keepInParentRect: true,
   showMaximizeButton: true,
+  chapterFields: null,
+
+  setChapterFields: function(fields) {
+    this.chapterFields = fields;
+  },
 
   initWidget: function(){
     this.Super("initWidget", arguments);
@@ -221,6 +226,17 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       names: isc.NamesDataSource.create(),
       interpretations: isc.InterpsDataSource.create()
     };
+
+    var self = this;
+    this.dataSources.tocTree.fetchData(null, function(dsResponse, data) {
+      var fields = [];
+
+      data.map(function(chapter) {
+        fields.add({name: chapter.n, type: "integer", valueXPath: "default:div[@n='" + chapter.n + "']/@count"});
+      });
+
+      self.setChapterFields(fields);
+    });
 
     this.mainPanel = isc.XSLTFlow.create({
       xsltName: "main",
@@ -436,7 +452,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     }).show();
   },
 
-  showDistributionTitles: function() {
+  showDistributionDialog: function() {
     isc.Window.create({
       autoCenter: true,
       width: 800,
@@ -445,7 +461,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
         this.markForDestroy();
       },
       items: [
-        isc.DistributionTitlesPanel.create({
+        isc.DistributionDialogPanel.create({
           height: "100%",
           teiDocument: this
         })
@@ -608,12 +624,94 @@ isc.defineClass("NotesPanel", isc.XSLTFlow).addProperties({
   xsltName: "notes"
 });
 
+isc.defineClass("DistributionDialogPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.ListGrid.create({
+      autoFetchData: true,
+      dataSource: isc.DistributionCountDataSource.create({
+        xmlDocument: this.teiDocument.xmlDocument,
+        xsltName: "dialogCount",
+        chapterFields: this.teiDocument.chapterFields
+      })
+    });
+
+    this.graph = isc.Label.create({
+      defaultValue: "Graph Here"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.graph
+    ]);
+  }
+});
+
 isc.defineClass("DistributionNamesPanel", isc.HLayout).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
 
-    this.grid = isc.ListGrid.create();
+    this.grid = isc.ListGrid.create({
+      autoFetchData: true,
+      dataSource: isc.DistributionCountDataSource.create({
+        xmlDocument: this.teiDocument.xmlDocument,
+        xsltName: "namesCount",
+        chapterFields: this.teiDocument.chapterFields
+      })
+    });
+
+    this.graph = isc.Label.create({
+      defaultValue: "Graph Here"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.graph
+    ]);
+  }
+});
+
+isc.defineClass("DistributionInterpretationsPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.ListGrid.create({
+      autoFetchData: true,
+      dataSource: isc.DistributionCountDataSource.create({
+        xmlDocument: this.teiDocument.xmlDocument,
+        xsltName: "interpretationCount",
+        chapterFields: this.teiDocument.chapterFields
+      })
+    });
+
+    this.graph = isc.Label.create({
+      defaultValue: "Graph Here"
+    });
+
+    this.addMembers([
+      this.grid,
+      this.graph
+    ]);
+  }
+});
+
+isc.defineClass("DistributionEverythingPanel", isc.HLayout).addProperties({
+  teiDocument: null,
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.ListGrid.create({
+      autoFetchData: true,
+      dataSource: isc.DistributionCountDataSource.create({
+        xmlDocument: this.teiDocument.xmlDocument,
+        xsltName: "everythingCount",
+        chapterFields: this.teiDocument.chapterFields
+      })
+    });
 
     this.graph = isc.Label.create({
       defaultValue: "Graph Here"
@@ -766,6 +864,18 @@ isc.defineClass("TocTreeDataSource", "XSLTDataSource").addProperties({
     {name: "n", type: "text", title: "n"},
     {name: "parentID", type: "text", foreignKey: "id"}
   ]
+});
+
+isc.defineClass("DistributionCountDataSource", "XSLTDataSource").addProperties({
+  recordXPath: "/default:keys/default:key",
+  init: function(options) {
+    this.fields = [
+      {name: "text", type: "text", title: "Key"},
+      {name: "total", type: "integer", title: "Total"}
+    ];
+    this.fields.addList(options.chapterFields);
+    return this.Super("init", arguments);
+  }
 });
 
 isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
