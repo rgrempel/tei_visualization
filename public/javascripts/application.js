@@ -181,14 +181,26 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       xsltName: "main",
       width: "*",
       height: "100%",
+      showEdges: true,
       showResizeBar: true,
       resizeBarTarget: "next"
     });
 
-    this.rightPanel = isc.SectionStack.create({
+    this.rightPanel = isc.AnalysisSectionStack.create({
+      teiDocument: this,
       width: 200,
       height: "100%",
-      showEdges: true
+      showEdges: true,
+      column: "right"
+    });
+
+    this.leftPanel = isc.AnalysisSectionStack.create({
+      teiDocument: this,
+      width: 200,
+      height: "100%",
+      showEdges: true,
+      column: "left",
+      showResizeBar: true
     });
 
     if (this.record) {
@@ -199,9 +211,10 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       teiDocument: this
     }).showInRightPanel();
 
-    this.dock = isc.TabSet.create({
+    this.dock = isc.AnalysisTabSet.create({
       height: 100,
-      width: "100%"
+      width: "100%",
+      hidden: true
     });
 
     this.addItem(
@@ -212,6 +225,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
             showResizeBar: true,
             resizeBarTarget: "next",
             members: [
+              this.leftPanel,
               this.mainPanel,
               this.rightPanel
             ]
@@ -220,6 +234,9 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
         ]
       })
     );
+
+    this.leftPanel.showIfHasSections();
+    this.rightPanel.showIfHasSections();
   },
 
   destroy: function() {
@@ -244,6 +261,92 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
   }
 });
 
+isc.defineClass("AnalysisTabSet", isc.TabSet).addProperties({
+  addTabs: function() {
+    this.Super("addTabs", arguments);
+    this.showIfHasTabs();
+  },
+
+  removeTabs: function() {
+    this.Super("removeTabs", arguments);
+    this.showIfHasTabs();
+  },
+
+  showIfHasTabs: function() {
+    if (this.getTabBar().buttons.getLength() > 0) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  }
+});
+
+isc.defineClass("AnalysisSectionStack", isc.SectionStack).addProperties({
+  column: null, // left or right
+  teiDocument: null,
+
+  addSection: function(section) {
+    this.Super("addSection", arguments);
+    this.showIfHasSections();
+  },
+
+  showIfHasSections: function() {
+    if (this.getSections().getLength() > 0) {
+      this.show();
+    } else {
+      this.hide();
+    }
+  },
+
+  removeSection: function() {
+    this.Super("removeSection", arguments);
+    this.showIfHasSections();
+  },
+
+  removeAnalysisPanel: function(panel) {
+    this.removeSection(panel.getSectionStackID());
+  }
+});
+
+isc.defineClass("ShowLeftButton", isc.ImgButton).addProperties({
+  target: null,
+  size: 16,
+  layoutAlign: "center",
+  showFocused: false,
+  showRollOver: false,
+  showDown: false,
+  src: "[SKIN]actions/freezeLeft.png",
+  click: function() {
+    this.target.showInLeftPanel();
+  }
+});
+
+isc.defineClass("ShowRightButton", isc.ImgButton).addProperties({
+  target: null,
+  size: 16,
+  layoutAlign: "center",
+  showFocused: false,
+  showRollOver: false,
+  showDown: false,
+  src: "[SKIN]actions/freezeRight.png",
+  click: function() {
+    this.target.showInRightPanel();
+  }
+});
+
+isc.defineClass("ShowWindowButton", isc.ImgButton).addProperties({
+  target: null,
+  size: 16,
+  layoutAlign: "center",
+  showFocused: false,
+  showRollOver: false,
+  showDown: false,
+  src: "[SKIN]actions/unfreeze.png",
+  click: function() {
+    this.target.showInWindow();
+  }
+});
+
 isc.defineClass("AnalysisWindow", isc.Window).addProperties({
   autoCenter: true,
   width: 800,
@@ -255,8 +358,25 @@ isc.defineClass("AnalysisWindow", isc.Window).addProperties({
   },
 
   initWidget: function() {
+    this.headerControls = [
+      "headerIcon",
+      "headerLabel",
+      isc.ShowLeftButton.create({target: this.analysisPanel}),
+      isc.ShowRightButton.create({target: this.analysisPanel}),
+      isc.LayoutSpacer.create({size: 16}),
+      "minimizeButton",
+      "maximizeButton",
+      "closeButton"
+    ];
+
     this.Super("initWidget", arguments);
+
     this.addItem(this.analysisPanel);
+  },
+
+  removeAnalysisPanel: function() {
+    this.removeItem(this.analysisPanel);
+    this.markForDestroy();
   }
 });
 
@@ -322,12 +442,15 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
 }).addProperties({
   width: "100%",
   height: "100%",
+  container: null,
 
   showInWindow: function() {
-    isc.AnalysisWindow.create({
+    if (this.container) this.container.removeAnalysisPanel(this);
+    this.container = isc.AnalysisWindow.create({
       analysisPanel: this,
       title: this.getClass().menuTitle
-    }).show();
+    });
+    this.container.show();
   },
 
   getSectionStackID: function() {
@@ -344,7 +467,31 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
   },
 
   showInRightPanel: function() {
-    this.teiDocument.rightPanel.addSection(this.getSectionStackSection());
+    if (this.container) this.container.removeAnalysisPanel(this);
+    this.container = this.teiDocument.rightPanel;
+    this.container.addSection(isc.addProperties(this.getSectionStackSection(), {
+      controls: [
+        isc.ShowLeftButton.create({target: this}),
+        isc.ShowWindowButton.create({target: this})
+      ]
+    }));
+  },
+
+  showInLeftPanel: function() {
+    if (this.container) this.container.removeAnalysisPanel(this);
+    this.container = this.teiDocument.leftPanel;
+    this.container.addSection(isc.addProperties(this.getSectionStackSection(), {
+      controls: [
+        isc.ShowWindowButton.create({target: this}),
+        isc.ShowRightButton.create({target: this})
+      ]
+    }));
+  },
+
+  showInDock: function() {
+    if (this.container) this.container.removeAnalysisPanel(this);
+    this.container = this.teiDocument.dock;
+    this.container;
   }
 });
 
