@@ -329,7 +329,8 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
 
   showInWindow: function() {
     isc.AnalysisWindow.create({
-      analysisPanel: this
+      analysisPanel: this,
+      title: this.getClass().menuTitle
     }).show();
   }
 });
