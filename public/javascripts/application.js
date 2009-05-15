@@ -53,7 +53,8 @@ isc.TEI.addProperties({
             isc.GlossaryPanel.getMenuItem(),
             isc.NotesPanel.getMenuItem(),
             isc.HeaderPanel.getMenuItem(),
-            isc.DOMGridPanel.getMenuItem()
+            isc.DOMGridPanel.getMenuItem(),
+            isc.TOCPanel.getMenuItem()
           ]
         },
         {
@@ -332,6 +333,22 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
       analysisPanel: this,
       title: this.getClass().menuTitle
     }).show();
+  }
+});
+
+isc.defineClass("TOCPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Table of Contents"
+}).addProperties({
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    this.grid = isc.TocTreeGrid.create({
+      width: "100%",
+      height: "100%",
+      dataSource: this.teiDocument.dataSources.tocTree
+    });
+
+    this.addChild(this.grid);
   }
 });
 
@@ -692,6 +709,7 @@ isc.defineClass("DistributionCountDataSource", "XSLTDataSource").addProperties({
 
 isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
   autoFetchData: true,
+  showHeader: false,
   loadDataOnDemand: false,
   fields: [
     {name: "text", treeField: true}
