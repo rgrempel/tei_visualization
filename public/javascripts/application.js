@@ -185,24 +185,19 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       resizeBarTarget: "next"
     });
 
-    this.tocPanel = isc.TocTreeGrid.create({
-      width: "100%",
-      height: "100%",
-      dataSource: this.dataSources.tocTree
-    });
-
-    this.rightPanel = isc.VLayout.create({
+    this.rightPanel = isc.SectionStack.create({
       width: 200,
       height: "100%",
-      showEdges: true,
-      members: [
-        this.tocPanel
-      ]
+      showEdges: true
     });
 
     if (this.record) {
       isc.XMLTools.loadXML("/documents/" + this.record.id + ".tei", {target: this, methodName: "loadXMLReply"}, {bypassCache: false});
     }
+
+    isc.TOCPanel.create({
+      teiDocument: this
+    }).showInRightPanel();
 
     this.dock = isc.TabSet.create({
       height: 100,
@@ -333,6 +328,23 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
       analysisPanel: this,
       title: this.getClass().menuTitle
     }).show();
+  },
+
+  getSectionStackID: function() {
+    return this.ID + "_stack";
+  },
+
+  getSectionStackSection: function() {
+    return {
+      title: this.getClass().menuTitle,
+      items: [this],
+      ID: this.getSectionStackID(),
+      expanded: true
+    };
+  },
+
+  showInRightPanel: function() {
+    this.teiDocument.rightPanel.addSection(this.getSectionStackSection());
   }
 });
 
