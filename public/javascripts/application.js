@@ -46,114 +46,34 @@ isc.TEI.addProperties({
           title: "Analysis",
           width: 100,
           data: [
-            {
-              title: "Names KWIC",
-              action: function() {
-                isc.TEI.app.teiDocument.showNamesKWIC();
-              }
-            },
-            {
-              title: "Names Dialog",
-              action: function() {
-                isc.TEI.app.teiDocument.showNamesDialog();
-              }
-            },
-            {
-              title: "Index KWIC",
-              action: function() {
-                isc.TEI.app.teiDocument.showIndexKWIC();
-              }
-            },
-            {
-              title: "Interpretations KWIC",
-              action: function() {
-                isc.TEI.app.teiDocument.showInterpretationsKWIC();
-              }
-            },
-            {
-              title: "Glossary",
-              action: function() {
-                isc.TEI.app.teiDocument.showGlossary();
-              }
-            },
-            {
-              title: "Notes",
-              action: function() {
-                isc.TEI.app.teiDocument.showNotes();
-              }
-            },
-            {
-              title: "Header",
-              action: function() {
-                isc.TEI.app.teiDocument.showHeader();
-              }
-            },
-            {
-              title: "Document Tree",
-              action: function() {
-                isc.TEI.app.teiDocument.showDOMGrid();
-              }
-            }
+            isc.NamesKWICPanel.getMenuItem(),
+            isc.NamesDialogPanel.getMenuItem(),
+            isc.IndexKWICPanel.getMenuItem(),
+            isc.InterpsKWICPanel.getMenuItem(),
+            isc.GlossaryPanel.getMenuItem(),
+            isc.NotesPanel.getMenuItem(),
+            isc.HeaderPanel.getMenuItem(),
+            isc.DOMGridPanel.getMenuItem()
           ]
         },
         {
           title: "Counting",
           width: 100,
           data: [
-            {
-              title: "Interpretations / Names (Containment)",
-              action: function() {
-                isc.TEI.app.teiDocument.showInterpNames();
-              }
-            },
-            {
-              title: "All Interpretations / Names (Containment)",
-              action: function() {
-                isc.TEI.app.teiDocument.showAllInterpNames();
-              }
-            },
-            {
-              title: "Interpretations / Names (Proximity)",
-              action: function() {
-                isc.TEI.app.teiDocument.showInterpNamesProximity();
-              }
-            },
-            {
-              title: "Interpretations / Interpretations (Proximity)",
-              action: function() {
-                isc.TEI.app.teiDocument.showInterpInterpProximity();
-              }
-            }
+            isc.InterpNamesPanel.getMenuItem(),
+            isc.InterpAllNamesPanel.getMenuItem(),
+            isc.InterpNamesProximity.getMenuItem(),
+            isc.InterpInterpXrefPanel.getMenuItem()
           ]
         },
         {
           title: "Distribution",
           width: 100,
           data: [
-            {
-              title: "Names",
-              action: function() {
-                isc.TEI.app.teiDocument.showDistributionNames();
-              }
-            },
-            {
-              title: "Dialog",
-              action: function() {
-                isc.TEI.app.teiDocument.showDistributionDialog();
-              }
-            },
-            {
-              title: "Interpretations",
-              action: function() {
-                isc.TEI.app.teiDocument.showDistributionInterpretations();
-              }
-            },
-            {
-              title: "Everything",
-              action: function() {
-                isc.TEI.app.teiDocument.showDistributionEverything();
-              }
-            }
+            isc.DistributionNamesPanel.getMenuItem(),
+            isc.DistributionInterpretationsPanel.getMenuItem(),
+            isc.DistributionDialogPanel.getMenuItem(),
+            isc.DistributionEverythingPanel.getMenuItem()
           ]
         },
         {
@@ -325,105 +245,6 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.getKeys(this.dataSources).map(function(key) {
       self.dataSources[key].setXMLDocument(xmlDoc);
     });
-  },
-
-  showDOMGrid: function() {
-    isc.DOMGridPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showInterpNames: function() {
-    isc.InterpNamesPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showIndexKWIC: function() {
-    isc.IndexKWICPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showGlossary: function() {
-    isc.GlossaryPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showHeader: function() {
-    isc.HeaderPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showNotes: function() {
-    isc.NotesPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showAllInterpNames: function() {
-    isc.XSLTFlowPanel.create({
-      xsltName: "interpAllNames",
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showInterpInterpProximity: function() {
-    isc.XSLTFlowPanel.create({
-      xsltName: "interpInterpXref",
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showInterpNamesProximity: function() {
-    isc.XSLTFlowPanel.create({
-      xsltName: "interpNamesProximity",
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showInterpretationsKWIC: function() {
-    isc.InterpsKWICPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showDistributionNames: function() {
-    isc.DistributionNamesPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showDistributionDialog: function() {
-    isc.DistributionDialogPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showDistributionInterpretations: function() {
-    isc.DistributionInterpretationsPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showDistributionEverything: function() {
-    isc.DistributionEverythingPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showNamesKWIC: function() {
-    isc.NamesKWICPanel.create({
-      teiDocument: this
-    }).showInWindow();
-  },
-
-  showNamesDialog: function() {
-    isc.NamesDialogPanel.create({
-      teiDocument: this
-    }).showInWindow();
   }
 });
 
@@ -488,9 +309,24 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
 });
 
 // This is the superclass for all Analysis Panels.
-isc.defineClass("AnalysisPanel", isc.Canvas).addProperties({
+isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
+  menuTitle: null,
+
+  getMenuItem: function() {
+    var self = this;
+    return {
+      title: this.menuTitle,
+      action: function() {
+        self.create({
+          teiDocument: isc.TEI.app.teiDocument
+        }).showInWindow();
+      }
+    }
+  }
+}).addProperties({
   width: "100%",
   height: "100%",
+
   showInWindow: function() {
     isc.AnalysisWindow.create({
       analysisPanel: this
@@ -498,7 +334,9 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addProperties({
   }
 });
 
-isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Document Tree"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -514,7 +352,9 @@ isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addProperties({
   }
 });
 
-isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Dialog"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -570,16 +410,40 @@ isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
   }
 });
 
-isc.defineClass("GlossaryPanel", isc.XSLTFlowPanel).addProperties({
+isc.defineClass("GlossaryPanel", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "Glossary"
+}).addProperties({
   xsltName: "glossary"
 });
 
-isc.defineClass("HeaderPanel", isc.XSLTFlowPanel).addProperties({
+isc.defineClass("HeaderPanel", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "Show Header"
+}).addProperties({
   xsltName: "teiHeader"
 });
 
-isc.defineClass("NotesPanel", isc.XSLTFlowPanel).addProperties({
+isc.defineClass("NotesPanel", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "Notes"
+}).addProperties({
   xsltName: "notes"
+});
+
+isc.defineClass("InterpAllNamesPanel", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "All Interpretations / Names (Containment)"
+}).addProperties({
+  xsltName: "interpAllNames"
+});
+
+isc.defineClass("InterpInterpXrefPanel", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "Interpretation / Interpretation (Proximity)"
+}).addProperties({
+  xsltName: "interpInterpXref"
+});
+
+isc.defineClass("InterpNamesProximity", isc.XSLTFlowPanel).addClassProperties({
+  menuTitle: "Interpretation / Names (Proximity)"
+}).addProperties({
+  xsltName: "interpNamesProximity"
 });
 
 isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
@@ -615,23 +479,33 @@ isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
   }
 });
 
-isc.defineClass("DistributionDialogPanel", isc.DistributionPanel).addProperties({
+isc.defineClass("DistributionDialogPanel", isc.DistributionPanel).addClassProperties({
+  menuTitle: "Dialog distribution"
+}).addProperties({
   xsltName: "dialogCount"
 });
 
-isc.defineClass("DistributionNamesPanel", isc.DistributionPanel).addProperties({
+isc.defineClass("DistributionNamesPanel", isc.DistributionPanel).addClassProperties({
+  menuTitle: "Names distribution"
+}).addProperties({
   xsltName: "namesCount"
 });
 
-isc.defineClass("DistributionInterpretationsPanel", isc.DistributionPanel).addProperties({
+isc.defineClass("DistributionInterpretationsPanel", isc.DistributionPanel).addClassProperties({
+  menuTitle: "Interpretations distribution"
+}).addProperties({
   xsltName: "interpretationCount"
 });
 
-isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addProperties({
+isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addClassProperties({
+  menuTitle: "Everything distribution"
+}).addProperties({
   xsltName: "everythingCount"
 });
 
-isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Index KWIC"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -668,7 +542,9 @@ isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addProperties({
 });
 
 // This is the analysis panel for names
-isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Names KWIC"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -704,7 +580,9 @@ isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addProperties({
   }
 });
 
-isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Interpretations / Names (Containment)"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -740,7 +618,9 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addProperties({
   }
 });
 
-isc.defineClass("InterpsKWICPanel", isc.AnalysisPanel).addProperties({
+isc.defineClass("InterpsKWICPanel", isc.AnalysisPanel).addClassProperties({
+  menuTitle: "Interpretations KWIC"
+}).addProperties({
   teiDocument: null,
   initWidget: function() {
     this.Super("initWidget", arguments);
