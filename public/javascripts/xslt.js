@@ -140,7 +140,7 @@ isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
       var self = this;
       this.xsltProcessor.clearParameters();
       isc.getKeys(this.params).map(function(key) {
-        self.xsltProcessor.setParameter(null, key, self.params[key]);
+        if (self.params[key] != null) self.xsltProcessor.setParameter(null, key, self.params[key]);
       });
       var xmlData = isc.XMLDoc.create(this.xsltProcessor.transformToDocument(this.xmlDocument.nativeDoc));
       var contents = this.xmlSerializer.serializeToString(xmlData.nativeDoc);

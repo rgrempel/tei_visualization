@@ -650,6 +650,9 @@ isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
   menuTitle: "Dialog"
 }).addProperties({
   teiDocument: null,
+  key: null,
+  kwicLength: 60,
+
   initWidget: function() {
     this.Super("initWidget", arguments);
 
@@ -659,16 +662,29 @@ isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
       height: "100%",
       parent: this,
       selectionChanged: function(record, state) {
-        if (state) this.parent.dialog.setParams({key: record.key});
+        if (state) this.parent.setKey(record.key);
       }
     }),
 
-    this.dialog = isc.XSLTFlow.create({
+    this.kwic = isc.XSLTFlow.create({
       xmlDocument: this.teiDocument.xmlDocument,
       xsltName: "nameDialog",
       showEdges: true,
-      width: "80%",
+      width: "100%",
       height: "100%"
+    });
+
+    this.slider = isc.Slider.create({
+      parent: this,
+      minValue: 0,
+      maxValue: 100,
+      vertical: false,
+      value: 60,
+      title: "KWIC Length",
+      valueChanged: function(value) {
+        this.Super("valueChanged", arguments);
+        this.parent.setKWICLength(value);
+      }
     });
 
     this.addChild(
@@ -677,10 +693,34 @@ isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
         defaultHeight: "100%",
         members: [
           this.grid,
-          this.dialog
+          isc.VLayout.create({
+            width: "80%",
+            height: "100%",
+            members: [
+              this.kwic,
+              this.slider
+            ]
+          })
         ]
       })
     );
+  },
+
+  setKey: function(key) {
+    this.key = key;
+    this.setParams();
+  },
+
+  setKWICLength: function(length) {
+    this.kwicLength = length;
+    this.setParams();
+  },
+
+  setParams: function() {
+    this.kwic.setParams ({
+      key: this.key,
+      'kwic-length': this.kwicLength
+    });
   }
 });
 
