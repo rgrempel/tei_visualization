@@ -476,6 +476,7 @@ isc.defineClass("InterpsDataSource", "XSLTDataSource").addProperties({
 });
 
 isc.defineClass("InterpsGrid", isc.ListGrid).addProperties({
+  teiDocument: null,
   autoFetchData: true,
   groupIcon: "[SKINIMG]/TreeGrid/folder.png",
   groupLeadingIndent: 0,
@@ -485,7 +486,11 @@ isc.defineClass("InterpsGrid", isc.ListGrid).addProperties({
     {name: "icon", type: "icon", align: "right", width: 36, canResize: false, cellIcon: "[SKINIMG]/TreeGrid/file.png"},
     {name: "text", title: "Interpretation", width: "*"},
     {name: "group", title: "Group", width: "20"}
-  ]
+  ],
+  initWidget: function() {
+    this.dataSource = this.teiDocument.getBoundDataSource(isc.InterpsDataSource);
+    this.Super("initWidget", arguments);
+  }
 });
 
 isc.defineClass("NamesDataSource", "XSLTDataSource").addProperties({
@@ -499,6 +504,7 @@ isc.defineClass("NamesDataSource", "XSLTDataSource").addProperties({
 });
 
 isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
+  teiDocument: null,
   autoFetchData: true,
   groupByField: "type",
   groupStartOpen: "none",
@@ -506,7 +512,11 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
     {name: "text", width: "*"},
     {name: "key", width: 40},
     {name: "type", width: 20}
-  ]
+  ],
+  initWidget: function() {
+    this.dataSource = this.teiDocument.getBoundDataSource(isc.NamesDataSource);
+    this.Super("initWidget", arguments);
+  }
 });
 
 // This is the superclass for all Analysis Panels.
@@ -650,29 +660,30 @@ isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addClassProperties({
   }
 });
 
-isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
-  menuTitle: "Dialog"
-}).addProperties({
+isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
+  gridConstructor: null,
+  kwicXSLTName: null,
+
   key: null,
   kwicLength: 60,
 
   initWidget: function() {
     this.Super("initWidget", arguments);
 
-    this.grid = isc.NamesGrid.create({
-      dataSource: this.teiDocument.getBoundDataSource(isc.NamesDataSource),
+    this.grid = isc[this.gridConstructor].create({
+      teiDocument: this.teiDocument,
       width: "20%",
       height: "100%",
       parent: this,
       selectionChanged: function(record, state) {
         if (state) this.parent.setKey(record.key);
       }
-    }),
+    });
 
     this.kwic = isc.XSLTFlow.create({
       xmlDocument: this.teiDocument.xmlDocument,
-      xsltName: "nameDialog",
+      xsltName: this.kwicXSLTName,
       showEdges: true,
       width: "100%",
       height: "100%"
@@ -726,6 +737,14 @@ isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
       'kwic-length': this.kwicLength
     });
   }
+});
+
+isc.defineClass("NamesDialogPanel", isc.KWICPanel).addClassProperties({
+  menuTitle: "Dialog",
+}).addProperties({
+  teiDocument: null,
+  gridConstructor: "NamesGrid",
+  kwicXSLTName: "nameDialog"
 });
 
 isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
@@ -841,81 +860,20 @@ isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addClassPr
   xsltName: "everythingCount"
 });
 
-isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addClassProperties({
+isc.defineClass("IndexKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Index KWIC"
 }).addProperties({
   teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.IndexGrid.create({
-      dataSource: this.teiDocument.getBoundDataSource(isc.IndexDataSource),
-      width: "20%",
-      height: "100%",
-      parent: this,
-      selectionChanged: function(record, state) {
-        if (state) this.parent.kwic.setParams({key: record.key});
-      }
-    }),
-
-    this.kwic = isc.XSLTFlow.create({
-      xmlDocument: this.teiDocument.xmlDocument,
-      xsltName: "indexKwic",
-      showEdges: true,
-      width: "80%",
-      height: "100%"
-    });
-
-    this.addChild(
-      isc.HLayout.create({
-        width: "100%",
-        defaultHeight: "100%",
-        members: [
-          this.grid,
-          this.kwic
-        ]
-      })
-    );
-  }
+  gridConstructor: "IndexGrid",
+  kwicXSLTName: "indexKwic"
 });
 
-// This is the analysis panel for names
-isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addClassProperties({
+isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Names KWIC"
 }).addProperties({
   teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.NamesGrid.create({
-      dataSource: this.teiDocument.getBoundDataSource(isc.NamesDataSource),
-      width: "20%",
-      height: "100%",
-      parent: this,
-      selectionChanged: function(record, state) {
-        if (state) this.parent.kwic.setParams({key: record.key});
-      }
-    }),
-
-    this.kwic = isc.XSLTFlow.create({
-      xmlDocument: this.teiDocument.xmlDocument,
-      xsltName: "nameKwic",
-      showEdges: true,
-      width: "80%",
-      height: "100%"
-    });
-
-    this.addChild(
-      isc.HLayout.create({
-        width: "100%",
-        defaultHeight: "100%",
-        members: [
-          this.grid,
-          this.kwic
-        ]
-      })
-    );
-  }
+  gridConstructor: "NamesGrid",
+  kwicXSLTName: "nameKwic"
 });
 
 isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
@@ -926,7 +884,7 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.InterpsGrid.create({
-      dataSource: this.teiDocument.getBoundDataSource(isc.InterpsDataSource),
+      teiDocument: this.teiDocument,
       width: "20%",
       height: "100%",
       parent: this,
@@ -956,42 +914,12 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
   }
 });
 
-isc.defineClass("InterpsKWICPanel", isc.AnalysisPanel).addClassProperties({
+isc.defineClass("InterpsKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Interpretations KWIC"
 }).addProperties({
   teiDocument: null,
-  initWidget: function() {
-    this.Super("initWidget", arguments);
-
-    this.grid = isc.InterpsGrid.create({
-      dataSource: this.teiDocument.getBoundDataSource(isc.InterpsDataSource),
-      width: "20%",
-      height: "100%",
-      parent: this,
-      selectionChanged: function(record, state) {
-        if (state) this.parent.kwic.setParams({key: record.key});
-      }
-    }),
-
-    this.kwic = isc.XSLTFlow.create({
-      xmlDocument: this.teiDocument.xmlDocument,
-      xsltName: "interpretationKwic",
-      showEdges: true,
-      width: "80%",
-      height: "100%"
-    });
-
-    this.addChild(
-      isc.HLayout.create({
-        width: "100%",
-        defaultHeight: "100%",
-        members: [
-          this.grid,
-          this.kwic
-        ]
-      })
-    );
-  }
+  gridConstructor: "InterpsGrid",
+  kwicXSLTName: "interpretationKwic"
 });
 
 isc.defineClass("IndexDataSource", "XSLTDataSource").addProperties({
@@ -1037,11 +965,16 @@ isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
 });
 
 isc.defineClass("IndexGrid", isc.TreeGrid).addProperties({
+  teiDocument: null,
   autoFetchData: true,
   loadDataOnDemand: false,
   fields: [
     {name: "text", treeField: true},
-  ]
+  ],
+  initWidget: function() {
+    this.dataSource = this.teiDocument.getBoundDataSource(isc.IndexDataSource);
+    this.Super("initWidget", arguments);
+  }
 });
 
 isc.defineClass("NewDocumentWindow", isc.Window).addProperties({
