@@ -28,6 +28,11 @@ isc.TEI.addProperties({
       ]
     });
 
+    this.panelsMenu = isc.Menu.create({
+      width: 100,
+      title: "Panels"
+    });
+
     this.menuBar = isc.MenuBar.create({
       menus: [
         {
@@ -77,6 +82,7 @@ isc.TEI.addProperties({
             isc.DistributionEverythingPanel.getMenuItem()
           ]
         },
+        this.panelsMenu,
         {
           title: "Debug",
           width: 100,
@@ -158,6 +164,8 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.Super("initWidget", arguments);
 
     this.setTitle(this.record.title);
+
+    this.panelList = [];
 
     this.dataSources = {
       tocTree: isc.TocTreeDataSource.create(),
@@ -248,8 +256,24 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     return this.Super("destroy", arguments);
   },
 
+  getPanelMenuData: function() {
+    return this.panelList.map(function(panel) {
+      return panel.getMenuItem();
+    });
+  },
+
   closeClick: function() {
     this.markForDestroy();
+  },
+
+  registerPanel: function(panel) {
+    this.panelList.add(panel);
+    isc.TEI.app.panelsMenu.setData(this.getPanelMenuData());
+  },
+
+  deregisterPanel: function(panel) {
+    this.panelList.remove(panel);
+    isc.TEI.app.panelsMenu.setData(this.getPanelMenuData());
   },
 
   loadXMLReply: function(xmlDoc, xmlText) {
@@ -291,6 +315,10 @@ isc.defineClass("AnalysisTabSet", isc.TabSet).addProperties({
   removeAnalysisPanel: function(panel) {
     this.updateTab(panel.getTabID(), null); // So the pane is not destroyed
     this.removeTab(panel.getTabID());
+  },
+
+  showAnalysisPanel: function(panel) {
+    this.selectTab(panel.getTabID());
   },
 
   addTabs: function() {
@@ -336,6 +364,10 @@ isc.defineClass("AnalysisSectionStack", isc.SectionStack).addProperties({
 
   removeAnalysisPanel: function(panel) {
     this.removeSection(panel.getSectionStackID());
+  },
+
+  showAnalysisPanel: function(panel) {
+    this.expandSection(panel.getSectionStackID());
   }
 });
 
@@ -422,6 +454,10 @@ isc.defineClass("AnalysisWindow", isc.Window).addProperties({
   removeAnalysisPanel: function() {
     this.removeItem(this.analysisPanel);
     this.markForDestroy();
+  },
+
+  showAnalysisPanel: function(panel) {
+    this.show();
   }
 });
 
@@ -488,6 +524,26 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
   width: "100%",
   height: "100%",
   container: null,
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    this.teiDocument.registerPanel(this);
+  },
+
+  getMenuItem: function() {
+    var self = this;
+    return {
+      title: this.getClass().menuTitle,
+      action: function() {
+        self.container.showAnalysisPanel(self);
+      }
+    }
+  },
+
+  destroy: function() {
+    this.teiDocument.deregisterPanel(this);
+    return this.Super("destroy", arguments);
+  },
 
   showInWindow: function() {
     if (this.container) this.container.removeAnalysisPanel(this);
