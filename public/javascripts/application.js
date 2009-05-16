@@ -160,22 +160,26 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.chapterFields = fields;
   },
 
+  getBoundDataSource: function(dataSourceClass) {
+    var className = dataSourceClass.getClassName();
+    if (!this.dataSources[className]) {
+      var dataSource = dataSourceClass.create({
+        xmlDocument: this.xmlDocument
+      })
+      this.dataSources[className] = dataSource
+    }
+    return this.dataSources[className];
+  },
+
   initWidget: function(){
     this.Super("initWidget", arguments);
 
     this.setTitle(this.record.title);
-
     this.panelList = [];
-
-    this.dataSources = {
-      tocTree: isc.TocTreeDataSource.create(),
-      index: isc.IndexDataSource.create(),
-      names: isc.NamesDataSource.create(),
-      interpretations: isc.InterpsDataSource.create()
-    };
+    this.dataSources = {};
 
     var self = this;
-    this.dataSources.tocTree.fetchData(null, function(dsResponse, data) {
+    this.getBoundDataSource(isc.TocTreeDataSource).fetchData(null, function(dsResponse, data) {
       var fields = [];
 
       data.map(function(chapter) {
@@ -621,7 +625,7 @@ isc.defineClass("TOCPanel", isc.AnalysisPanel).addClassProperties({
     this.grid = isc.TocTreeGrid.create({
       width: "100%",
       height: "100%",
-      dataSource: this.teiDocument.dataSources.tocTree
+      dataSource: this.teiDocument.getBoundDataSource(isc.TocTreeDataSource)
     });
 
     this.addChild(this.grid);
@@ -657,7 +661,7 @@ isc.defineClass("NamesDialogPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.NamesGrid.create({
-      dataSource: this.teiDocument.dataSources["names"],
+      dataSource: this.teiDocument.getBoundDataSource(isc.NamesDataSource),
       width: "20%",
       height: "100%",
       parent: this,
@@ -845,7 +849,7 @@ isc.defineClass("IndexKWICPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.IndexGrid.create({
-      dataSource: this.teiDocument.dataSources["index"],
+      dataSource: this.teiDocument.getBoundDataSource(isc.IndexDataSource),
       width: "20%",
       height: "100%",
       parent: this,
@@ -884,7 +888,7 @@ isc.defineClass("NamesKWICPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.NamesGrid.create({
-      dataSource: this.teiDocument.dataSources["names"],
+      dataSource: this.teiDocument.getBoundDataSource(isc.NamesDataSource),
       width: "20%",
       height: "100%",
       parent: this,
@@ -922,7 +926,7 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.InterpsGrid.create({
-      dataSource: this.teiDocument.dataSources["interpretations"],
+      dataSource: this.teiDocument.getBoundDataSource(isc.InterpsDataSource),
       width: "20%",
       height: "100%",
       parent: this,
@@ -960,7 +964,7 @@ isc.defineClass("InterpsKWICPanel", isc.AnalysisPanel).addClassProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.InterpsGrid.create({
-      dataSource: this.teiDocument.dataSources["interpretations"],
+      dataSource: this.teiDocument.getBoundDataSource(isc.InterpsDataSource),
       width: "20%",
       height: "100%",
       parent: this,
