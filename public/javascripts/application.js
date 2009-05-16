@@ -214,7 +214,8 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.dock = isc.AnalysisTabSet.create({
       height: 100,
       width: "100%",
-      hidden: true
+      hidden: true,
+      canCloseTabs: true
     });
 
     this.addItem(
@@ -237,6 +238,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 
     this.leftPanel.showIfHasSections();
     this.rightPanel.showIfHasSections();
+    this.dock.showIfHasTabs();
   },
 
   destroy: function() {
@@ -334,6 +336,19 @@ isc.defineClass("ShowRightButton", isc.ImgButton).addProperties({
   }
 });
 
+isc.defineClass("ShowDockButton", isc.ImgButton).addProperties({
+  target: null,
+  size: 16,
+  layoutAlign: "center",
+  showFocused: false,
+  showRollOver: false,
+  showDown: false,
+  src: "[SKIN]Window/collapse.png",
+  click: function() {
+    this.target.showInDock();
+  }
+});
+
 isc.defineClass("ShowWindowButton", isc.ImgButton).addProperties({
   target: null,
   size: 16,
@@ -362,6 +377,7 @@ isc.defineClass("AnalysisWindow", isc.Window).addProperties({
       "headerIcon",
       "headerLabel",
       isc.ShowLeftButton.create({target: this.analysisPanel}),
+      isc.ShowDockButton.create({target: this.analysisPanel}),
       isc.ShowRightButton.create({target: this.analysisPanel}),
       isc.LayoutSpacer.create({size: 16}),
       "minimizeButton",
@@ -466,13 +482,26 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
     };
   },
 
+  getTabID: function() {
+    return this.ID + "_tab";
+  },
+
+  getTab: function() {
+    return {
+      title: this.getClass().menuTitle,
+      ID: this.getTabID(),
+      pane: this
+    };
+  },
+
   showInRightPanel: function() {
     if (this.container) this.container.removeAnalysisPanel(this);
     this.container = this.teiDocument.rightPanel;
     this.container.addSection(isc.addProperties(this.getSectionStackSection(), {
       controls: [
         isc.ShowLeftButton.create({target: this}),
-        isc.ShowWindowButton.create({target: this})
+        isc.ShowWindowButton.create({target: this}),
+        isc.ShowDockButton.create({target: this})
       ]
     }));
   },
@@ -483,6 +512,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
     this.container.addSection(isc.addProperties(this.getSectionStackSection(), {
       controls: [
         isc.ShowWindowButton.create({target: this}),
+        isc.ShowDockButton.create({target: this}),
         isc.ShowRightButton.create({target: this})
       ]
     }));
@@ -491,7 +521,8 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
   showInDock: function() {
     if (this.container) this.container.removeAnalysisPanel(this);
     this.container = this.teiDocument.dock;
-    this.container;
+    this.container.addTab(this.getTab());
+    this.container.selectTab(this.getTabID());;
   }
 });
 
