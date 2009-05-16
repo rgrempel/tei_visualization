@@ -264,6 +264,35 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 });
 
 isc.defineClass("AnalysisTabSet", isc.TabSet).addProperties({
+  initWidget: function() {
+    this.tabBarControls = [
+      isc.ShowLeftButton.create({target: this}),
+      isc.ShowWindowButton.create({target: this}),
+      isc.ShowRightButton.create({target: this}),
+      "tabScroller",
+      "tabPicker"
+    ];
+
+    this.Super("initWidget", arguments);
+  },
+
+  showInLeftPanel: function() {
+    this.getSelectedTab().pane.showInLeftPanel();
+  },
+
+  showInRightPanel: function() {
+    this.getSelectedTab().pane.showInRightPanel();
+  },
+
+  showInWindow: function() {
+    this.getSelectedTab().pane.showInWindow();
+  },
+
+  removeAnalysisPanel: function(panel) {
+    this.updateTab(panel.getTabID(), null); // So the pane is not destroyed
+    this.removeTab(panel.getTabID());
+  },
+
   addTabs: function() {
     this.Super("addTabs", arguments);
     this.showIfHasTabs();
@@ -467,6 +496,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
       title: this.getClass().menuTitle
     });
     this.container.show();
+    this.show(); // Needed when transitioning from TabSet
   },
 
   getSectionStackID: function() {
