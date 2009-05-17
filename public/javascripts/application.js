@@ -280,6 +280,12 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.TEI.app.panelsMenu.setData(this.getPanelMenuData());
   },
 
+  handleScrollToID: function(id) {
+    var element = isc.Element.get(id);
+    var scrollTo = isc.Element.getOffsetTop(element);
+    this.mainPanel.animateScroll(0, scrollTo);
+  },
+
   loadXMLReply: function(xmlDoc, xmlText) {
     this.xmlDocument = xmlDoc;
     this.mainPanel.setXMLDocument(xmlDoc);
@@ -635,6 +641,7 @@ isc.defineClass("TOCPanel", isc.AnalysisPanel).addClassProperties({
     this.grid = isc.TocTreeGrid.create({
       width: "100%",
       height: "100%",
+      teiDocument: this.teiDocument,
       dataSource: this.teiDocument.getBoundDataSource(isc.TocTreeDataSource)
     });
 
@@ -956,12 +963,19 @@ isc.defineClass("DistributionCountDataSource", "XSLTDataSource").addProperties({
 });
 
 isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
+  teiDocument: null,
   autoFetchData: true,
   showHeader: false,
   loadDataOnDemand: false,
+  selectionType: "single",
   fields: [
     {name: "text", treeField: true}
-  ]
+  ],
+  selectionChanged: function(record, state) {
+    if (state) {
+      this.teiDocument.handleScrollToID(record.id);
+    }
+  }
 });
 
 isc.defineClass("IndexGrid", isc.TreeGrid).addProperties({
