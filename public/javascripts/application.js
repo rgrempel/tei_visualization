@@ -318,13 +318,33 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 
   doScrollToID: function(id) {
     var element = isc.Element.get(id);
+    if (element) this.doScrollToElement(element);
+  },
+
+  doScrollToElement: function(element) {
     var scrollTo = isc.Element.getOffsetTop(element);
+
+    if (!scrollTo && element != this.mainPanel.getHandle()) {
+      // It's probably hidden ... try scrolling the previous sibling, or the parent
+      if (element.previousSibling) {
+        this.doScrollToElement(element.previousSibling);
+      } else if (element.parentNode) {
+        this.doScrollToElement(element.parentNode);
+      }
+      return;
+    }
+
     this.scrolling = true;
     var self = this;
     this.mainPanel.animateScroll(0, scrollTo, function(){
       self.scrolling = false;
       self.handleScrolled();
     });
+  },
+
+  doHandleScrollTo: function(panelClass, scrollTo) {
+    if (panelClass != "MainPanel") return;
+    this.doScrollToID(scrollTo);
   },
 
   fireScrolledToDiv: function(element) {
@@ -710,6 +730,22 @@ isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addClassProperties({
     this.grid.setRootElement(this.teiDocument.xmlDocument.documentElement);
 
     this.addChild(this.grid);
+  }
+});
+
+isc.XSLTFlow.addProperties({
+  click: function() {
+    var nativeTarget = isc.EventHandler.lastEvent.nativeTarget;
+    if (nativeTarget) {
+      var scrollTarget = isc.XMLTools.selectNodes(nativeTarget, "ancestor-or-self::*[@scrollTo]");
+      if (scrollTarget.getLength() > 0) {
+        scrollTarget = scrollTarget.get(0);
+        isc.TEI.app.teiDocument.doHandleScrollTo(
+          scrollTarget.getAttribute("panelClass"),
+          scrollTarget.getAttribute("scrollTo")
+        );
+      }
+    }
   }
 });
 

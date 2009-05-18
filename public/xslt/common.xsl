@@ -157,7 +157,10 @@
     </xsl:template>
 
     <xsl:template match="*" mode="kwic">
-        <div class="kwic-entry">
+        <div class="kwic-entry" panelClass="MainPanel">
+            <xsl:attribute name="scrollTo">
+                <xsl:apply-templates select="." mode="id"/>
+            </xsl:attribute>
             <!-- Then we put the preceding text into a <span> -->
             <span class="kwic-preceding">
                 <xsl:call-template name="preceding-text">
@@ -166,13 +169,7 @@
             </span>
             <!-- Then we put the text itself in a different span ... perhaps bold? -->
             <span class="kwic-entry-text">
-                <a>
-                    <xsl:attribute name="href">
-                        <xsl:text>#</xsl:text>
-                        <xsl:apply-templates select="." mode="id"/>
-                    </xsl:attribute>
-                    <xsl:value-of select="."/>
-                </a>
+                <xsl:value-of select="."/>
             </span>
             <!-- Then we put the following text into another <span> -->
             <span class="kwic-following">
@@ -184,7 +181,10 @@
     </xsl:template>
 
     <xsl:template match="tei:index/tei:term" mode="kwic">
-        <div class="kwic-entry">
+        <div class="kwic-entry" panelClass="MainPanel">
+            <xsl:attribute name="scrollTo">
+                <xsl:apply-templates select="." mode="id"/>
+            </xsl:attribute>
             <!-- Then we put the preceding text into a <span> -->
             <span class="kwic-preceding">
                 <xsl:call-template name="preceding-text">
@@ -194,13 +194,7 @@
             </span>
             <!-- Then we put the text itself in a different span ... perhaps bold? -->
             <span class="kwic-entry-text">
-                <a>
-                    <xsl:attribute name="href">
-                        <xsl:text>#</xsl:text>
-                        <xsl:apply-templates select="." mode="id"/>
-                    </xsl:attribute>
-                    <xsl:text>&lt;--&gt;</xsl:text>
-                </a>
+                <xsl:text>&lt;--&gt;</xsl:text>
             </span>
             <!-- Then we put the following text into another <span> -->
             <span class="kwic-following">
