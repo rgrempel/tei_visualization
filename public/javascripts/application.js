@@ -365,6 +365,50 @@ isc.defineClass("MainPanel", isc.XSLTFlow).addProperties({
   xsltName: "main",
   scrolled: function() {
     this.teiDocument.handleScrolled();
+  },
+  showContextMenu: function() {
+    var self = this;
+    var menuItems = [];
+
+    var lg = isc.EH.findTarget('ancestor-or-self::div[@class="lg"]');
+    if (lg) {
+      var title = "Float Line Group";
+      menuItems.add({
+        title: title,
+        action: function() {
+          self.doFloatSection(this.title, lg);
+        }
+      });
+    }
+
+    var chapter = isc.EH.findTarget('ancestor-or-self::div[@class="div"]');
+    if (chapter) {
+      var title =  "Float " + (chapter.getAttribute("type") || "section");
+      menuItems.add({
+        title: title,
+        action: function() {
+          self.doFloatSection(this.title, chapter);
+        }
+      });
+    }
+
+    if (menuItems.getLength() > 0) {
+      var menu = isc.Menu.create({
+        data: menuItems
+      });
+      menu.showContextMenu();
+      return false;
+    } else {
+      return true;
+    }
+  },
+
+  doFloatSection: function(title, node) {
+    isc.FloatingMainPanel.create({
+      teiDocument: this.teiDocument,
+      menuTitle: title,
+      originalNode: node
+    }).showInWindow();
   }
 });
 
@@ -704,6 +748,17 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
     this.container = this.teiDocument.dock;
     this.container.addTab(this.getTab());
     this.container.selectTab(this.getTabID());;
+  }
+});
+
+isc.defineClass("FloatingMainPanel", isc.AnalysisPanel).addProperties({
+  originalNode: null,
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+
+    s = new XMLSerializer();
+    this.setContents(s.serializeToString(this.originalNode));
   }
 });
 
