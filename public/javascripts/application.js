@@ -363,9 +363,39 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
 isc.defineClass("MainPanel", isc.XSLTFlow).addProperties({
   teiDocument: null,
   xsltName: "main",
+  lastMouseCheck: new Date().getTime(),
+  minMouseDelta: 200,
+  lastHoverElement: null,
+
+  mouseMove: function() {
+    var time = new Date().getTime();
+    if ((time - this.lastMouseCheck) < this.minMouseDelta) return;
+
+    this.lastMouseCheck = time;
+
+    var hover = isc.EventHandler.findTarget("ancestor-or-self::*[@hover]");
+
+    if (this.lastHoverElement != hover) {
+      if (this.lastHoverElement) {
+        isc.Hover.clear();
+        this.lastHoverElement = null;
+      }
+
+      if (hover) {
+        this.lastHoverElement = hover;
+        isc.Hover.setAction(this, this.doHoverElement);
+      }
+    }
+  },
+
+  doHoverElement: function() {
+    isc.Hover.show(this.lastHoverElement.getAttribute("hover"));
+  },
+
   scrolled: function() {
     this.teiDocument.handleScrolled();
   },
+
   showContextMenu: function() {
     var self = this;
     var menuItems = [];

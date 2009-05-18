@@ -217,7 +217,7 @@
             <a href="{@target}">
                 <xsl:variable name="glossary" select="(//tei:label[@xml:id = substring-after(current()/@target, '#')]/following-sibling::tei:item)[1]" />
                 <xsl:if test="$glossary">
-                    <xsl:attribute name="ext:qtip">
+                    <xsl:attribute name="hover">
                         <xsl:value-of select="$glossary" />
                     </xsl:attribute>
                 </xsl:if>
@@ -227,7 +227,7 @@
     </xsl:template>
     
     <xsl:template match="tei:note">
-        <span class="noteref" ext:qtip="{.}">
+        <span class="noteref" hover="{.}">
             <xsl:number level="any" />
         </span>
     </xsl:template>
