@@ -1,5 +1,9 @@
 /* Some styles for the KWIC */
 
+body {
+  overflow: hidden;
+}
+
 div.kwic-entry {
     padding-top: 3px;
     padding-bottom: 3px;
