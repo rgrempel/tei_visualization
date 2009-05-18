@@ -190,12 +190,16 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
 
     this.mainPanel = isc.XSLTFlow.create({
+      teiDocument: this,
       xsltName: "main",
       width: "*",
       height: "100%",
       showEdges: true,
       showResizeBar: true,
-      resizeBarTarget: "next"
+      resizeBarTarget: "next",
+      scrolled: function() {
+        this.teiDocument.handleScrolled();
+      }
     });
 
     this.rightPanel = isc.AnalysisSectionStack.create({
@@ -280,10 +284,44 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.TEI.app.panelsMenu.setData(this.getPanelMenuData());
   },
 
-  handleScrollToID: function(id) {
+  handleScrolled: function() {
+    if (this.scrolling) return;
+
+    if (!this.divs) {
+      var divs = isc.XMLTools.selectNodes(this.getHandle(), '//div[@class="div"]');
+      if (divs.getLength() > 0) {
+        this.divs = divs;
+      } else {
+        return;
+      }
+    }
+
+    var scrollTop = this.mainPanel.getScrollTop();
+    var length = this.divs.getLength();
+    var target = null;
+
+    for (var x = length - 1; x >= 0; x--) {
+      target = this.divs.get(x);
+      if (isc.Element.getOffsetTop(target) <= scrollTop) break;
+    }
+
+    this.fireScrolledToDiv(target);
+  },
+
+  doScrollToID: function(id) {
     var element = isc.Element.get(id);
     var scrollTo = isc.Element.getOffsetTop(element);
-    this.mainPanel.animateScroll(0, scrollTo);
+    this.scrolling = true;
+    var self = this;
+    this.mainPanel.animateScroll(0, scrollTo, function(){
+      self.scrolling = false;
+      self.handleScrolled();
+    });
+  },
+
+  fireScrolledToDiv: function(element) {
+    // for observation
+    return element;
   },
 
   loadXMLReply: function(xmlDoc, xmlText) {
@@ -968,13 +1006,48 @@ isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
   showHeader: false,
   loadDataOnDemand: false,
   selectionType: "single",
+  handlingSelection: false,
+
   fields: [
     {name: "text", treeField: true}
   ],
+
   selectionChanged: function(record, state) {
+    if (this.handlingSelection) return;
+    this.handlingSelection = true;
     if (state) {
-      this.teiDocument.handleScrollToID(record.id);
+      this.handlingSelectionChanged = true;
+      this.teiDocument.doScrollToID(record.id);
+      this.handlingSelectionChanged = false;
     }
+    this.handlingSelection = false;
+  },
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+    this.observe(this.teiDocument, "fireScrolledToDiv", "observer.handleScrollToDiv(returnVal)");
+  },
+
+  handleScrollToDiv: function(div) {
+    if (this.handlingSelection) return;
+    this.handlingSelection = true;
+
+    var selection = this.getSelectedRecord();
+    var id = div.getAttribute("id");
+    if (selection) {
+      if (selection.id == id) {
+        this.handlingSelection = false;
+        return;
+      } else {
+        this.selectRecord(selection, false);
+      }
+    }
+
+    this.selectRecord(this.data.find({
+      id: div.getAttribute("id")
+    }));
+
+    this.handlingSelection = false;
   }
 });
 
