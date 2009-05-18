@@ -624,11 +624,15 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
   getMenuItem: function() {
     var self = this;
     return {
-      title: this.getClass().menuTitle,
+      title: this.getMenuTitle(),
       action: function() {
         self.container.showAnalysisPanel(self);
       }
     }
+  },
+
+  getMenuTitle: function() {
+    return this.menuTitle || this.getClass().menuTitle;
   },
 
   destroy: function() {
@@ -640,7 +644,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
     if (this.container) this.container.removeAnalysisPanel(this);
     this.container = isc.AnalysisWindow.create({
       analysisPanel: this,
-      title: this.getClass().menuTitle
+      title: this.getMenuTitle()
     });
     this.container.show();
     this.show(); // Needed when transitioning from TabSet
@@ -652,7 +656,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
 
   getSectionStackSection: function() {
     return {
-      title: this.getClass().menuTitle,
+      title: this.getMenuTitle(),
       items: [this],
       ID: this.getSectionStackID(),
       expanded: true
@@ -665,7 +669,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
 
   getTab: function() {
     return {
-      title: this.getClass().menuTitle,
+      title: this.getMenuTitle(),
       ID: this.getTabID(),
       pane: this
     };
