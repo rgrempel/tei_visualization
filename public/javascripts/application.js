@@ -122,6 +122,7 @@ isc.TEI.addProperties({
   },
 
   doOpenDocument: function(doc) {
+    this.documentWindow.hide();
     if (this.teiDocument == doc) return;
     if (this.teiDocument) {
       this.documentArea.removeChild(this.teiDocument);
