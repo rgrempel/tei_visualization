@@ -339,6 +339,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.mainPanel.animateScroll(0, scrollTo, function(){
       self.scrolling = false;
       self.handleScrolled();
+      isc.Element.yellowFade(element);
     });
   },
 
