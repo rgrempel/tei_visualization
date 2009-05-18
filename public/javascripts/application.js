@@ -740,16 +740,12 @@ isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addClassProperties({
 
 isc.XSLTFlow.addProperties({
   click: function() {
-    var nativeTarget = isc.EventHandler.lastEvent.nativeTarget;
-    if (nativeTarget) {
-      var scrollTarget = isc.XMLTools.selectNodes(nativeTarget, "ancestor-or-self::*[@scrollTo]");
-      if (scrollTarget.getLength() > 0) {
-        scrollTarget = scrollTarget.get(0);
-        isc.TEI.app.teiDocument.doHandleScrollTo(
-          scrollTarget.getAttribute("panelClass"),
-          scrollTarget.getAttribute("scrollTo")
-        );
-      }
+    var scrollTarget = isc.EventHandler.findTarget("ancestor-or-self::*[@scrollTo]");
+    if (scrollTarget) {
+      isc.TEI.app.teiDocument.doHandleScrollTo(
+        scrollTarget.getAttribute("panelClass"),
+        scrollTarget.getAttribute("scrollTo")
+      );
     }
   }
 });

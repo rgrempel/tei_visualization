@@ -5,6 +5,23 @@ isc.Canvas.addProperties({
   }
 });
 
+// A convenience method to find the first ancestor of a nativeTarget that
+// matches the supplied xpath.
+isc.EventHandler.addClassProperties({
+  findTarget: function(xpath, namespaces, ev) {
+    if (!ev) ev = isc.EventHandler.lastEvent;
+    if (!ev) return null;
+    if (!ev.nativeTarget) return null;
+
+    var nodes = isc.XMLTools.selectNodes(ev.nativeTarget, xpath, namespaces);
+    if (nodes.getLength() > 0) {
+      return nodes.get(0);
+    } else {
+      return null;
+    }
+  }
+});
+
 // Performs a yellow background highlight which then fades.
 // Element is the element to fade ... required
 // Color is the highlight color ... defaults to yellow
