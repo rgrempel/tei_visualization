@@ -1,3 +1,10 @@
+// A convenience method to selectNodes relative to a Canvas
+isc.Canvas.addProperties({
+  selectNodes: function(xpath, namespaces) {
+    return isc.XMLTools.selectNodes(this.getHandle(), xpath, namespaces);
+  }
+});
+
 // Performs a yellow background highlight which then fades.
 // Element is the element to fade ... required
 // Color is the highlight color ... defaults to yellow

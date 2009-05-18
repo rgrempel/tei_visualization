@@ -292,7 +292,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     if (this.scrolling) return;
 
     if (!this.divs) {
-      var divs = isc.XMLTools.selectNodes(this.getHandle(), 'descendant::div[@class="div"]');
+      var divs = this.selectNodes('descendant::div[@class="div"]');
       if (divs.getLength() > 0) {
         this.divs = divs;
       } else {
