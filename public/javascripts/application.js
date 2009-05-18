@@ -197,17 +197,13 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
       self.setChapterFields(fields);
     });
 
-    this.mainPanel = isc.XSLTFlow.create({
+    this.mainPanel = isc.MainPanel.create({
       teiDocument: this,
-      xsltName: "main",
       width: "*",
       height: "100%",
       showEdges: true,
       showResizeBar: true,
-      resizeBarTarget: "next",
-      scrolled: function() {
-        this.teiDocument.handleScrolled();
-      }
+      resizeBarTarget: "next"
     });
 
     this.rightPanel = isc.AnalysisSectionStack.create({
@@ -361,6 +357,14 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     isc.getKeys(this.dataSources).map(function(key) {
       self.dataSources[key].setXMLDocument(xmlDoc);
     });
+  }
+});
+
+isc.defineClass("MainPanel", isc.XSLTFlow).addProperties({
+  teiDocument: null,
+  xsltName: "main",
+  scrolled: function() {
+    this.teiDocument.handleScrolled();
   }
 });
 
