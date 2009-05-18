@@ -40,6 +40,12 @@ isc.TEI.addProperties({
           width: 100,
           data: [
             {
+              title: "New",
+              action: function() {
+                isc.TEI.app.doNewDocument();
+              }
+            },
+            {
               title: "Open",
               action: function() {
                 isc.TEI.app.showDocumentList();
@@ -123,6 +129,7 @@ isc.TEI.addProperties({
 
   doOpenDocument: function(doc) {
     this.documentWindow.hide();
+    if (this.newDocumentWindow) this.newDocumentWindow.hide();
     if (this.teiDocument == doc) return;
     if (this.teiDocument) {
       this.documentArea.removeChild(this.teiDocument);
@@ -1094,10 +1101,15 @@ isc.defineClass("NewDocumentForm", isc.FileUploadForm).addProperties({
       align: "center",
       colSpan: 2,
       click: function(form, item) {
-        form.saveFileData();
+        form.saveFileData({target: form, methodName: "handleReply"});
       }
     }
-  ]
+  ],
+  handleReply: function(dsResponse, data, dsRequest) {
+    if (dsResponse.status == 0) {
+      isc.TEI.app.doOpenDocument(data);
+    }
+  }
 });
 
 isc.RailsDataSource.create({
