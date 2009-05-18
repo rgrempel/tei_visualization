@@ -1134,6 +1134,9 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
       },
       doNew: function() {
         isc.TEI.app.doNewDocument();
+      },
+      recordDoubleClick: function(viewer, record, recordNum, field, fieldNum, value, rawValue) {
+        isc.TEI.app.doOpenDocument(record);
       }
     });
 
