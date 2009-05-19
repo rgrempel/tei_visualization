@@ -52,10 +52,18 @@ isc.XSLTDocument.addClassProperties({
         pendingCallbacks.add(callback);
       } else {
         self.pendingCallbacks[url] = [callback];
-        isc.XMLTools.loadXML(url, function(xmlDoc, xmlText) {
-          self.sheets[url] = xmlDoc;
-          xmlDoc.loadedFromURL = url;
-          xmlDoc.initializeXSLTDependencies();
+        isc.rpc.sendRequest({
+          actionURL: url,
+          useSimpleHttp: true,
+          httpMethod: "GET",
+          serverOutputAsString: false,
+          bypassCache: true,
+          callback: function(rpcResponse) {
+            var xmlDoc = isc.XMLDoc.create(rpcResponse.xmlHttpRequest.responseXML);
+            self.sheets[url] = xmlDoc;
+            xmlDoc.loadedFromURL = url;
+            xmlDoc.initializeXSLTDependencies();
+          }
         });
       }
     }
@@ -68,7 +76,7 @@ isc.XMLDoc.addProperties({
     isc.XSLTDocument.pendingCallbacks[self.loadedFromURL].map(function(callback) {
       self.fireCallback(callback, "xmlDoc", [self]);
     });
-    isc.XSLTDocument.pendingCallbacks[self.loadedFromURL] = null;
+    isc.XSLTDocument.pendingCallbacks[self.loadedFromURL] = [];
   },
 
   initializeXSLTDependencies: function() {

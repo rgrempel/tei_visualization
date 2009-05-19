@@ -224,7 +224,14 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
 
     if (this.record) {
-      isc.XMLTools.loadXML("/documents/" + this.record.id + ".tei", {target: this, methodName: "loadXMLReply"}, {bypassCache: false});
+      isc.rpc.sendRequest({
+        actionURL: "/documents/" + this.record.id + ".tei",
+        httpMethod: "GET",
+        useSimpleHttp: true,
+        serverOutputAsString: false,
+        bypassCache: true,
+        callback: {target: this, methodName: "loadXMLReply"}
+      });
     }
 
     isc.TOCPanel.create({
@@ -349,7 +356,9 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     return element;
   },
 
-  loadXMLReply: function(xmlDoc, xmlText) {
+  loadXMLReply: function(dsResponse, data, dsRequest) {
+    var xmlDoc = isc.XMLDoc.create(dsResponse.xmlHttpRequest.responseXML);
+
     this.xmlDocument = xmlDoc;
     this.mainPanel.setXMLDocument(xmlDoc);
 
