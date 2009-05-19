@@ -46,7 +46,7 @@ isc.Element.addClassProperties({
       r: originalRGB.r - highlightRGB.r,
       g: originalRGB.g - highlightRGB.g,
       b: originalRGB.b - highlightRGB.b
-    }
+    };
 
     element.style.backgroundColor = color;
 
