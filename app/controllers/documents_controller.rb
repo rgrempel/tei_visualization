@@ -56,7 +56,7 @@ class DocumentsController < ApplicationController
     if @record
       respond_to do |format|
         format.tei do
-          send_file @record.contents.path, :x_sendfile => true, :type => :xml
+          send_file @record.contents.path, :x_sendfile => (Rails.env != "development"), :type => :xml
         end
       end
     end
