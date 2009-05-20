@@ -1,3 +1,59 @@
+// A shim to Bluff for charting
+isc.defineClass("BluffChart", isc.Canvas).addProperties({
+  redrawOnResize: true,
+  overflow: "hidden",
+  theme: "theme_keynote",
+
+  initWidget: function() {
+    this.Super("initWidget", arguments);
+  },
+
+  getCanvasID: function() {
+    return this.getID() + "_canvas";
+  },
+
+  getInnerHTML: function() {
+    return '<canvas id="' + this.getCanvasID() + '"></canvas>';
+  },
+
+  draw: function() {
+    this.Super("draw", arguments);
+    this.drawGraph();
+    return this;
+  },
+
+  redraw: function() {
+    this.Super("redraw", arguments);
+    this.drawGraph();
+    return this;
+  },
+
+  drawGraph: function() {
+    var self = this;
+    var g = this.graph = new Bluff.Line(this.getCanvasID(), String(this.getInnerWidth()) + 'x' + String(this.getInnerHeight()));
+
+    g[this.theme]();
+    g.title = this.title;
+
+    var rowTitleFieldName = this.facets.getLength() > 1 ? this.facets[1].id : this.labelField;
+    var dataFields = this.facets[0].values;
+    this.data.map(function(row) {
+      g.data(row[rowTitleFieldName], dataFields.map(function(field) {
+        return row[field.name];
+      }));
+    });
+
+    var index = 0;
+    var labels = {};
+    dataFields.map(function(field) {
+      labels[index++] = field.title || field.name;
+    });
+    g.labels = labels;
+
+    this.graph.draw();
+  }
+});
+
 // A convenience method to selectNodes relative to a Canvas
 isc.Canvas.addProperties({
   selectNodes: function(xpath, namespaces) {

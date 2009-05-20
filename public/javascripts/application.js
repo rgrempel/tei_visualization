@@ -999,16 +999,38 @@ isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
     this.Super("initWidget", arguments);
 
     this.grid = isc.ListGrid.create({
+      defaultWidth: "*",
+      creator: this,
+      teiDocument: this.teiDocument,
       autoFetchData: true,
       dataSource: isc.DistributionCountDataSource.create({
         xmlDocument: this.teiDocument.xmlDocument,
         xsltName: this.xsltName,
         chapterFields: this.teiDocument.chapterFields
-      })
+      }),
+      showResizeBar: true,
+      resizeBarTarget: "next",
+      chartConstructor: "BluffChart",
+      chartProperties: {
+        width: "100%",
+        height: "100%"
+      },
+      selectionChanged: function(record, state) {
+        var selectedRecords = this.getSelection();
+        if (selectedRecords.getLength() > 0) {
+          var chart = this.chartData("text", this.teiDocument.chapterFields.map(function(field) {
+            return field.name;
+          }), selectedRecords, {labelField: "text"});
+          this.creator.setGraph(chart);
+        } else {
+          this.creator.setGraph(null);
+        }
+      }
     });
 
-    this.graph = isc.Label.create({
-      defaultValue: "Graph Here"
+    this.graph = isc.Canvas.create({
+      width: "33%",
+      height: "100%"
     });
 
     this.addChild(
@@ -1021,6 +1043,23 @@ isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
         ]
       })
     );
+
+    this.setGraph(null);
+  },
+
+  setGraph: function(newGraph) {
+    if (this.graph.children) this.graph.removeChild(this.graph.children.get(0));
+    if (newGraph) {
+      this.graph.addChild(newGraph);
+    } else {
+      this.graph.addChild(isc.Label.create({
+        contents: "Select row(s) to graph",
+        align: "center",
+        valign: "center",
+        width: "100%",
+        height: "100%"
+      }));
+    }
   }
 });
 

@@ -16,6 +16,9 @@
 
     = javascript_include_tag "/#{isomorphicDir}/skins/TreeFrog/load_skin.js"
 
+    - %w( js-class excanvas bluff-min ).each do |js|
+      = javascript_include_tag "/javascripts/Bluff/#{js}.js"
+
     - %w( smartclient-ext xslt application ).each do |js|
       = javascript_include_tag "/javascripts/#{js}.js"
 
