@@ -22,6 +22,7 @@ span.kwic-entry-text {
     padding-right: 0.5em;
     color: blue;
     text-decoration: underline;
+    cursor: pointer;
 }
 
 span.kwic-preceding {
@@ -56,4 +57,11 @@ div[corresp] {
     border-right: 8px solid blue;
     margin-right: 2px;
     padding-right: 2px;
+}
+
+/* scrollTo's */
+
+*[scrollTo] {
+    color: blue,
+    cursor: pointer
 }
