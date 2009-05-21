@@ -871,6 +871,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       width: "20%",
       height: "100%",
       parent: this,
+      showResizeBar: true,
       selectionChanged: function(record, state) {
         if (state) this.parent.setKey(record.key);
       }
