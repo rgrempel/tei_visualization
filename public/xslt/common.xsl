@@ -270,9 +270,20 @@
             </xsl:choose>
         </div>
     </xsl:template>
+
+    <xsl:template match="tei:note" mode="note-panel-id">
+        <xsl:text>note-panel-</xsl:text>
+        <xsl:apply-templates select="." mode="id" />
+    </xsl:template>
     
     <xsl:template match="tei:note">
-        <span class="noteref" hover="{.}">
+        <span class="noteref" hover="{.}" panelClass="NotesPanel">
+            <xsl:attribute name="scrollTo">
+                <xsl:apply-templates select="." mode="note-panel-id" />
+            </xsl:attribute>
+            <xsl:attribute name="id">
+                <xsl:apply-templates select="." mode="id" />
+            </xsl:attribute>
             <xsl:number level="any" />
         </span>
     </xsl:template>

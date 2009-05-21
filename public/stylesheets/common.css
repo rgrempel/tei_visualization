@@ -44,11 +44,16 @@ span.kwic-following {
 /* And for notes */
 
 span.noteref {
-    font-size: 70%;
+    font-size: 80%;
     position: relative;
     bottom: 3px;
     color: blue;
     background-color: inherit;
+    cursor: pointer;
+}
+
+div.note {
+    cursor: pointer;
 }
 
 /* and corresp */

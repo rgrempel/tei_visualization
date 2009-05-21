@@ -18,7 +18,13 @@
   </xsl:template>
 
   <xsl:template match="tei:note">
-    <div class="note">
+    <div class="note" panelClass="MainPanel">
+      <xsl:attribute name="id">
+        <xsl:apply-templates select="." mode="note-panel-id" />
+      </xsl:attribute>
+      <xsl:attribute name="scrollTo">
+        <xsl:apply-templates select="." mode="id" />
+      </xsl:attribute>
       <span class="noteref">
         <xsl:number level="any"/>
         <xsl:text>.</xsl:text>
