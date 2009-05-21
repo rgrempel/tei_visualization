@@ -1,5 +1,15 @@
 isc.setAutoDraw(false);
 
+isc.defineClass("AppMenu", isc.Menu).addProperties({
+  width: 100,
+  canHover: true,
+  hoverDelay: 1200,
+  hoverWidth: 200,
+  cellHoverHTML: function(record, rowNum, colNum) {
+    return record.hoverText;
+  }
+});
+
 isc.defineClass("TEI");
 
 isc.TEI.addClassProperties({
@@ -28,32 +38,32 @@ isc.TEI.addProperties({
       ]
     });
 
-    this.panelsMenu = isc.Menu.create({
-      width: 100,
+    this.panelsMenu = isc.AppMenu.create({
       title: "Panels"
     });
 
     this.menuBar = isc.MenuBar.create({
       menus: [
-        {
+        isc.AppMenu.create({
           title: "Documents",
-          width: 100,
           data: [
             {
               title: "New",
               action: function() {
                 isc.TEI.app.doNewDocument();
-              }
+              },
+              hoverText: "Upload a new TEI document, or provide a URL"
             },
             {
               title: "Open",
               action: function() {
                 isc.TEI.app.showDocumentList();
-              }
+              },
+              hoverText: "Open a TEI document that was previously uploaded"
             }
           ]
-        },
-        {
+        }),
+        isc.AppMenu.create({
           title: "KWIC",
           width: 100,
           data: [
@@ -62,8 +72,8 @@ isc.TEI.addProperties({
             isc.IndexKWICPanel.getMenuItem(),
             isc.InterpsKWICPanel.getMenuItem()
           ]
-        },
-        {
+        }),
+        isc.AppMenu.create({
           title: "Structure",
           width: 100,
           data: [
@@ -71,16 +81,16 @@ isc.TEI.addProperties({
             isc.DOMGridPanel.getMenuItem(),
             isc.TOCPanel.getMenuItem()
           ]
-        },
-        {
+        }),
+        isc.AppMenu.create({
           title: "XRef",
           width: 100,
           data: [
             isc.GlossaryPanel.getMenuItem(),
             isc.NotesPanel.getMenuItem()
           ]
-        },
-        {
+        }),
+        isc.AppMenu.create({
           title: "Counting",
           width: 100,
           data: [
@@ -89,8 +99,8 @@ isc.TEI.addProperties({
             isc.InterpNamesProximity.getMenuItem(),
             isc.InterpInterpXrefPanel.getMenuItem()
           ]
-        },
-        {
+        }),
+        isc.AppMenu.create({
           title: "Distribution",
           width: 100,
           data: [
@@ -99,20 +109,20 @@ isc.TEI.addProperties({
             isc.DistributionDialogPanel.getMenuItem(),
             isc.DistributionEverythingPanel.getMenuItem()
           ]
-        },
+        }),
         this.panelsMenu,
-        {
+        isc.AppMenu.create({
           title: "Debug",
-          width: 100,
           data: [
             {
               title: "Show Console",
               action: function() {
                 isc.showConsole();
-              }
+              },
+              hoverText: "Show SmartClient Debugging Console"
             }
           ]
-        }
+        })
       ]
     });
 
@@ -703,11 +713,13 @@ isc.defineClass("NamesGrid", isc.ListGrid).addProperties({
 // This is the superclass for all Analysis Panels.
 isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
   menuTitle: null,
+  hoverText: null,
 
   getMenuItem: function() {
     var self = this;
     return {
       title: this.menuTitle,
+      hoverText: this.hoverText,
       action: function() {
         self.create({
           teiDocument: isc.TEI.app.teiDocument
@@ -732,6 +744,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
     var self = this;
     return {
       title: this.getMenuTitle(),
+      hoverText: this.getHoverText(),
       action: function() {
         self.container.showAnalysisPanel(self);
       }
@@ -740,6 +753,10 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
 
   getMenuTitle: function() {
     return this.menuTitle || this.getClass().menuTitle;
+  },
+
+  getHoverText: function() {
+    return this.hoverText || this.getClass().hoverText;
   },
 
   destroy: function() {
@@ -827,7 +844,8 @@ isc.defineClass("FloatingMainPanel", isc.AnalysisPanel).addProperties({
 });
 
 isc.defineClass("TOCPanel", isc.AnalysisPanel).addClassProperties({
-  menuTitle: "Table of Contents"
+  menuTitle: "Table of Contents",
+  hoverText: "Show the document's Table of Contents"
 }).addProperties({
   initWidget: function() {
     this.Super("initWidget", arguments);
@@ -844,7 +862,8 @@ isc.defineClass("TOCPanel", isc.AnalysisPanel).addClassProperties({
 });
 
 isc.defineClass("DOMGridPanel", isc.AnalysisPanel).addClassProperties({
-  menuTitle: "Document Tree"
+  menuTitle: "Document Tree",
+  hoverText: "Show an outline of the structure of the TEI document"
 }).addProperties({
   teiDocument: null,
   initWidget: function() {
@@ -992,6 +1011,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
 
 isc.defineClass("NamesDialogPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Dialog",
+  hoverText: "Show the &lt;said&gt; tags with context"
 }).addProperties({
   menuTitle: "Dialog KWIC",
   teiDocument: null,
@@ -1029,37 +1049,43 @@ isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
 });
 
 isc.defineClass("GlossaryPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Glossary"
+  menuTitle: "Glossary",
+  hoverText: "Show Glossary entries"
 }).addProperties({
   xsltName: "glossary"
 });
 
 isc.defineClass("HeaderPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Header"
+  menuTitle: "Header",
+  hoverText: "Show the TEI Header"
 }).addProperties({
   xsltName: "teiHeader"
 });
 
 isc.defineClass("NotesPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Notes"
+  menuTitle: "Notes",
+  hoverText: "Show notes defined in the TEI document"
 }).addProperties({
   xsltName: "notes"
 });
 
 isc.defineClass("InterpAllNamesPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "All Interpretations / Names (Containment)"
+  menuTitle: "All Interpretations / Names (Containment)",
+  hoverText: "Count cross-references between interpretations and names, where 'hits' are counted when one contains another"
 }).addProperties({
   xsltName: "interpAllNames"
 });
 
 isc.defineClass("InterpInterpXrefPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Interpretation / Interpretation (Proximity)"
+  menuTitle: "Interpretation / Interpretation (Proximity)",
+  hoverText: "Count cross-references among interpretations, where 'hits' are counted when one is in the same paragraph (or line group) as the other"
 }).addProperties({
   xsltName: "interpInterpXref"
 });
 
 isc.defineClass("InterpNamesProximity", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Interpretation / Names (Proximity)"
+  menuTitle: "Interpretation / Names (Proximity)",
+  hoverText: "Count cross-references between interpretations and names, where 'hits' are counted when one is the same paragraph (or line gropu) as the other"
 }).addProperties({
   xsltName: "interpNamesProximity"
 });
@@ -1137,35 +1163,40 @@ isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
 });
 
 isc.defineClass("DistributionDialogPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Dialog"
+  menuTitle: "Dialog",
+  hoverText: "Show how many times each speaker has dialog (&lt;said&gt; tags) in each chapter (or other &lt;div&gt;)"
 }).addProperties({
   menuTitle: "Dialog (Distribution)",
   xsltName: "dialogCount"
 });
 
 isc.defineClass("DistributionNamesPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Names"
+  menuTitle: "Names",
+  hoverText: "Show how many times each name is marked in each chapter (or other &lt;div&gt;)"
 }).addProperties({
   menuTitle: "Names (Distribution)",
   xsltName: "namesCount"
 });
 
 isc.defineClass("DistributionInterpretationsPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Interpretations"
+  menuTitle: "Interpretations",
+  hoverText: "Show how many times each interpretation is marked in each chapter (or other &lt;div&gt;)"
 }).addProperties({
   menuTitle: "Interpretations (Distribution)",
   xsltName: "interpretationCount"
 });
 
 isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Everything"
+  menuTitle: "Everything",
+  hoverText: "Show how many times dialog, names and interpretations are marked in each chapter (or other &lt;div&gt;)"
 }).addProperties({
   menuTitle: "Everything (Distribution)",
   xsltName: "everythingCount"
 });
 
 isc.defineClass("IndexKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Index"
+  menuTitle: "Index",
+  hoverText: "Show index entries from the TEI document"
 }).addProperties({
   menuTitle: "Index (KWIC)",
   teiDocument: null,
@@ -1174,7 +1205,8 @@ isc.defineClass("IndexKWICPanel", isc.KWICPanel).addClassProperties({
 });
 
 isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Names"
+  menuTitle: "Names",
+  hoverText: "Show names and referring strings with context"
 }).addProperties({
   menuTitle: "Names (KWIC)",
   teiDocument: null,
@@ -1183,7 +1215,8 @@ isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
 });
 
 isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
-  menuTitle: "Interpretations / Names (Containment)"
+  menuTitle: "Interpretations / Names (Containment)",
+  hoverText: "Count cross-references between interpretations and names, where 'hits' are counted when one contains the other"
 }).addProperties({
   teiDocument: null,
   initWidget: function() {
@@ -1221,7 +1254,8 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
 });
 
 isc.defineClass("InterpsKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Interpretations"
+  menuTitle: "Interpretations",
+  hoverText: "Show interpretations with context"
 }).addProperties({
   menuTitle: "Interpretations (KWIC)",
   teiDocument: null,
