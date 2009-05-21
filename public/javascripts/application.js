@@ -697,6 +697,9 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
         self.create({
           teiDocument: isc.TEI.app.teiDocument
         }).showInWindow();
+      },
+      enableIf: function(target, menu, item) {
+        return isc.TEI.app.teiDocument ? true : false;
       }
     }
   }
