@@ -929,9 +929,12 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       vertical: false,
       value: 60,
       title: "KWIC Length",
+      timerMS: 200,
+      timerID: null,
       valueChanged: function(value) {
         this.Super("valueChanged", arguments);
-        this.parent.setKWICLength(value);
+        if (this.timerID) isc.Timer.clear(this.timerID);
+        this.timerID = this.parent.delayCall("setKWICLength", [value], this.valueIsChanging() ? this.timerMS : 0);
       }
     });
 
