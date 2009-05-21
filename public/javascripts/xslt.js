@@ -154,6 +154,15 @@ isc.defineClass("XSLTFlow", isc.Canvas).addProperties({
       var contents = this.xmlSerializer.serializeToString(xmlData.nativeDoc);
       this.setContents(contents);
     }
+  },
+
+  redraw: function() {
+    var retVal = this.Super("redraw", arguments);
+    if (this.scrollToOnCreation) {
+      this.scrollToID(this.scrollToOnCreation);
+      this.scrollToOnCreation = null;
+    }
+    return retVal;
   }
 });
 

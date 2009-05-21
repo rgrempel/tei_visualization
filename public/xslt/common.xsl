@@ -238,15 +238,36 @@
                 <xsl:apply-templates select="." mode="id"/>
             </xsl:attribute>
             <xsl:apply-templates select="@*"/>
-            <a href="{@target}">
-                <xsl:variable name="glossary" select="(//tei:label[@xml:id = substring-after(current()/@target, '#')]/following-sibling::tei:item)[1]" />
-                <xsl:if test="$glossary">
+            <!-- If it is a ref to a glossary entry, then deal with it specially -->
+            <xsl:variable name="glossary" select="(//tei:label[@xml:id = substring-after(current()/@target, '#')]/following-sibling::tei:item)[1]" />
+            <xsl:choose>
+                <xsl:when test="$glossary">
                     <xsl:attribute name="hover">
                         <xsl:value-of select="$glossary" />
                     </xsl:attribute>
-                </xsl:if>
-                <xsl:apply-templates/>
-            </a>
+                    <xsl:attribute name="panelClass">
+                        <xsl:text>GlossaryPanel</xsl:text>
+                    </xsl:attribute>
+                    <xsl:attribute name="scrollTo">
+                        <xsl:value-of select="substring-after(@target, '#')" />
+                    </xsl:attribute>
+                    <xsl:apply-templates />
+                </xsl:when>
+                <!-- Deal with internal links specially -->
+                <xsl:when test="substring(@target, 1, 1) = '#'">
+                    <xsl:attribute name="panelClass">
+                      <xsl:text>MainPanel</xsl:text>
+                    </xsl:attribute>
+                    <xsl:attribute name="scrollTo">
+                      <xsl:value-of select="substring-after(@target, '#')" />
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <a href="{@target}">
+                        <xsl:apply-templates />
+                    </a>
+                </xsl:otherwise>
+            </xsl:choose>
         </div>
     </xsl:template>
     

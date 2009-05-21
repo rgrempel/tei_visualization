@@ -340,9 +340,30 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     });
   },
 
+  findPanelClass: function(panelClass) {
+    var panel = null;
+    this.panelList.map(function(eachPanel) {
+      if (eachPanel.getClassName() == panelClass) panel = eachPanel;
+    });
+    return panel;
+  },
+
   doHandleScrollTo: function(panelClass, scrollTo) {
-    if (panelClass != "MainPanel") return;
-    this.doScrollToID(scrollTo);
+    if (panelClass == "MainPanel") {
+      this.scrollToID(scrollTo);
+    } else {
+      var panel = this.findPanelClass(panelClass);
+      if (panel) {
+        panel.show();
+        panel.scrollToID(scrollTo);
+      } else {
+        panel = isc[panelClass].create({
+          teiDocument: this,
+          scrollToOnCreation: scrollTo
+        });
+        panel.showInWindow();
+      }
+    }
   },
 
   fireScrolledToDiv: function(element) {
@@ -984,17 +1005,26 @@ isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
   width: "100%",
   defaultHeight: "100%",
 
+  scrollToID: function(id, callback) {
+    this.flow.scrollToID(id, callback);
+  },
+
+  scrollToElement: function(element) {
+    this.flow.scrollToElement(element);
+  },
+
   initWidget: function() {
     this.Super("initWidget", arguments);
 
-    this.addChild(
-      isc.XSLTFlow.create({
-        defaultWidth: "100%",
-        defaultHeight: "100%",
-        xsltName: this.xsltName,
-        xmlDocument: this.teiDocument.xmlDocument
-      })
-    )
+    this.flow = isc.XSLTFlow.create({
+      defaultWidth: "100%",
+      defaultHeight: "100%",
+      xsltName: this.xsltName,
+      xmlDocument: this.teiDocument.xmlDocument,
+      scrollToOnCreation: this.scrollToOnCreation
+    });
+
+    this.addChild(this.flow);
   }
 });
 
