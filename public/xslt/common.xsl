@@ -163,9 +163,15 @@
             </xsl:attribute>
             <!-- Then we put the preceding text into a <span> -->
             <span class="kwic-preceding">
+              <xsl:variable name="preceding">
                 <xsl:call-template name="preceding-text">
                     <xsl:with-param name="length" select="$kwic-length"/>
                 </xsl:call-template>
+              </xsl:variable>
+              <xsl:if test="string-length(normalize-space($preceding)) = 0">
+                <xsl:comment>Avoid bug</xsl:comment>
+              </xsl:if>
+              <xsl:value-of select="$preceding" />
             </span>
             <!-- Then we put the text itself in a different span ... perhaps bold? -->
             <span class="kwic-entry-text">
@@ -173,9 +179,15 @@
             </span>
             <!-- Then we put the following text into another <span> -->
             <span class="kwic-following">
+              <xsl:variable name="following">
                 <xsl:call-template name="following-text">
                     <xsl:with-param name="length" select="$kwic-length"/>
                 </xsl:call-template>
+              </xsl:variable>
+              <xsl:if test="string-length(normalize-space($following)) = 0">
+                <xsl:comment>Avoid bug</xsl:comment>
+              </xsl:if>
+              <xsl:value-of select="$following" />
             </span>
         </div>
     </xsl:template>
@@ -187,10 +199,16 @@
             </xsl:attribute>
             <!-- Then we put the preceding text into a <span> -->
             <span class="kwic-preceding">
+              <xsl:variable name="preceding">
                 <xsl:call-template name="preceding-text">
                     <xsl:with-param name="length" select="$kwic-length"/>
                     <xsl:with-param name="context" select="(ancestor::tei:div)[1]"/>
                 </xsl:call-template>
+              </xsl:variable>
+              <xsl:if test="string-length(normalize-space($preceding)) = 0">
+                <xsl:comment>Avoid bug</xsl:comment>
+              </xsl:if>
+              <xsl:value-of select="$preceding" />
             </span>
             <!-- Then we put the text itself in a different span ... perhaps bold? -->
             <span class="kwic-entry-text">
@@ -198,10 +216,16 @@
             </span>
             <!-- Then we put the following text into another <span> -->
             <span class="kwic-following">
+              <xsl:variable name="following">
                 <xsl:call-template name="following-text">
                     <xsl:with-param name="length" select="$kwic-length"/>
                     <xsl:with-param name="context" select="(ancestor::tei:div)[1]"/>
                 </xsl:call-template>
+              </xsl:variable>
+              <xsl:if test="string-length(normalize-space($following)) = 0">
+                <xsl:comment>Avoid bug</xsl:comment>
+              </xsl:if>
+              <xsl:value-of select="$following" />
             </span>
         </div>
     </xsl:template>

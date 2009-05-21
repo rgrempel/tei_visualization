@@ -858,6 +858,40 @@ isc.XSLTFlow.addProperties({
   }
 });
 
+isc.defineClass("KWICFlow", isc.XSLTFlow).addProperties({
+  updateSizes: function() {
+    this.selectNodes('descendant::div[@class="kwic-entry"]').map(function(kwicEntry) {
+      var kwicText = isc.XMLTools.selectNodes(kwicEntry, 'descendant::span[@class="kwic-entry-text"]').get(0);
+      var kwicPreceding = isc.XMLTools.selectNodes(kwicEntry, 'descendant::span[@class="kwic-preceding"]').get(0);
+      var kwicFollowing = isc.XMLTools.selectNodes(kwicEntry, 'descendant::span[@class="kwic-following"]').get(0);
+
+      kwicFollowing.style.top = kwicPreceding.style.top = String(isc.Element.getOffsetTop(kwicText)) + "px";
+      kwicPreceding.style.width = String(isc.Element.getOffsetLeft(kwicText)) + "px";
+      kwicFollowing.style.left = String(isc.Element.getOffsetLeft(kwicText) + isc.Element.getNativeInnerWidth(kwicText)) + "px";
+
+      kwicEntry.style.height = String(Math.max(
+        isc.Element.getInnerHeight(kwicText) + isc.Element.getOffsetTop(kwicText),
+        isc.Element.getInnerHeight(kwicPreceding) + isc.Element.getOffsetTop(kwicText),
+        isc.Element.getInnerHeight(kwicFollowing) + isc.Element.getOffsetTop(kwicText)
+      )) + "px";
+    });
+
+    this.adjustForContent();
+  },
+
+  redraw: function() {
+    this.getHandle().style.visibility = "hidden";
+    this.Super("redraw", arguments);
+    this.updateSizes();
+    this.getHandle().style.visibility = "visible";
+  },
+
+  innerSizeChanged: function() {
+    this.updateSizes();
+    return this.Super("innerSizeChanged", arguments);
+  }
+});
+
 isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   gridConstructor: null,
@@ -880,7 +914,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       }
     });
 
-    this.kwic = isc.XSLTFlow.create({
+    this.kwic = isc.KWICFlow.create({
       xmlDocument: this.teiDocument.xmlDocument,
       xsltName: this.kwicXSLTName,
       showEdges: true,
