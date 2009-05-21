@@ -54,18 +54,30 @@ isc.TEI.addProperties({
           ]
         },
         {
-          title: "Analysis",
+          title: "KWIC",
           width: 100,
           data: [
             isc.NamesKWICPanel.getMenuItem(),
             isc.NamesDialogPanel.getMenuItem(),
             isc.IndexKWICPanel.getMenuItem(),
-            isc.InterpsKWICPanel.getMenuItem(),
-            isc.GlossaryPanel.getMenuItem(),
-            isc.NotesPanel.getMenuItem(),
+            isc.InterpsKWICPanel.getMenuItem()
+          ]
+        },
+        {
+          title: "Structure",
+          width: 100,
+          data: [
             isc.HeaderPanel.getMenuItem(),
             isc.DOMGridPanel.getMenuItem(),
             isc.TOCPanel.getMenuItem()
+          ]
+        },
+        {
+          title: "XRef",
+          width: 100,
+          data: [
+            isc.GlossaryPanel.getMenuItem(),
+            isc.NotesPanel.getMenuItem()
           ]
         },
         {
@@ -978,6 +990,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
 isc.defineClass("NamesDialogPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Dialog",
 }).addProperties({
+  menuTitle: "Dialog KWIC",
   teiDocument: null,
   gridConstructor: "NamesGrid",
   kwicXSLTName: "nameDialog"
@@ -1010,7 +1023,7 @@ isc.defineClass("GlossaryPanel", isc.XSLTFlowPanel).addClassProperties({
 });
 
 isc.defineClass("HeaderPanel", isc.XSLTFlowPanel).addClassProperties({
-  menuTitle: "Show Header"
+  menuTitle: "Header"
 }).addProperties({
   xsltName: "teiHeader"
 });
@@ -1112,40 +1125,46 @@ isc.defineClass("DistributionPanel", isc.AnalysisPanel).addProperties({
 });
 
 isc.defineClass("DistributionDialogPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Dialog distribution"
+  menuTitle: "Dialog"
 }).addProperties({
+  menuTitle: "Dialog (Distribution)",
   xsltName: "dialogCount"
 });
 
 isc.defineClass("DistributionNamesPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Names distribution"
+  menuTitle: "Names"
 }).addProperties({
+  menuTitle: "Names (Distribution)",
   xsltName: "namesCount"
 });
 
 isc.defineClass("DistributionInterpretationsPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Interpretations distribution"
+  menuTitle: "Interpretations"
 }).addProperties({
+  menuTitle: "Interpretations (Distribution)",
   xsltName: "interpretationCount"
 });
 
 isc.defineClass("DistributionEverythingPanel", isc.DistributionPanel).addClassProperties({
-  menuTitle: "Everything distribution"
+  menuTitle: "Everything"
 }).addProperties({
+  menuTitle: "Everything (Distribution)",
   xsltName: "everythingCount"
 });
 
 isc.defineClass("IndexKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Index KWIC"
+  menuTitle: "Index"
 }).addProperties({
+  menuTitle: "Index (KWIC)",
   teiDocument: null,
   gridConstructor: "IndexGrid",
   kwicXSLTName: "indexKwic"
 });
 
 isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Names KWIC"
+  menuTitle: "Names"
 }).addProperties({
+  menuTitle: "Names (KWIC)",
   teiDocument: null,
   gridConstructor: "NamesGrid",
   kwicXSLTName: "nameKwic"
@@ -1190,8 +1209,9 @@ isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
 });
 
 isc.defineClass("InterpsKWICPanel", isc.KWICPanel).addClassProperties({
-  menuTitle: "Interpretations KWIC"
+  menuTitle: "Interpretations"
 }).addProperties({
+  menuTitle: "Interpretations (KWIC)",
   teiDocument: null,
   gridConstructor: "InterpsGrid",
   kwicXSLTName: "interpretationKwic"
