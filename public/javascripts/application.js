@@ -567,6 +567,10 @@ isc.defineClass("ShowLeftButton", isc.ImgButton).addProperties({
   showFocused: false,
   showRollOver: false,
   showDown: false,
+  canHover: true,
+  getHoverHTML: function() {
+    return "Move to left-hand column"
+  },
   src: "[SKIN]actions/freezeLeft.png",
   click: function() {
     this.target.showInLeftPanel();
@@ -580,6 +584,10 @@ isc.defineClass("ShowRightButton", isc.ImgButton).addProperties({
   showFocused: false,
   showRollOver: false,
   showDown: false,
+  canHover: true,
+  getHoverHTML: function() {
+    return "Move to right-hand column"
+  },
   src: "[SKIN]actions/freezeRight.png",
   click: function() {
     this.target.showInRightPanel();
@@ -593,6 +601,10 @@ isc.defineClass("ShowDockButton", isc.ImgButton).addProperties({
   showFocused: false,
   showRollOver: false,
   showDown: false,
+  canHover: true,
+  getHoverHTML: function() {
+    return "Move to the dock"
+  },
   src: "[SKIN]Window/collapse.png",
   click: function() {
     this.target.showInDock();
@@ -606,6 +618,10 @@ isc.defineClass("ShowWindowButton", isc.ImgButton).addProperties({
   showFocused: false,
   showRollOver: false,
   showDown: false,
+  canHover: true,
+  getHoverHTML: function() {
+    return "Show in a window"
+  },
   src: "[SKIN]actions/unfreeze.png",
   click: function() {
     this.target.showInWindow();
