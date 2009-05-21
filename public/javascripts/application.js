@@ -331,30 +331,12 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.fireScrolledToDiv(target);
   },
 
-  doScrollToID: function(id) {
-    var element = isc.Element.get(id);
-    if (element) this.doScrollToElement(element);
-  },
-
-  doScrollToElement: function(element) {
-    var scrollTo = isc.Element.getOffsetTop(element);
-
-    if (!scrollTo && element != this.mainPanel.getHandle()) {
-      // It's probably hidden ... try scrolling the previous sibling, or the parent
-      if (element.previousSibling) {
-        this.doScrollToElement(element.previousSibling);
-      } else if (element.parentNode) {
-        this.doScrollToElement(element.parentNode);
-      }
-      return;
-    }
-
+  scrollToElement: function(element) {
     this.scrolling = true;
     var self = this;
-    this.mainPanel.animateScroll(0, scrollTo, function(){
+    this.mainPanel.scrollToElement(element, function(){
       self.scrolling = false;
       self.handleScrolled();
-      isc.Element.yellowFade(element);
     });
   },
 
@@ -1267,7 +1249,7 @@ isc.defineClass("TocTreeGrid", isc.TreeGrid).addProperties({
     this.handlingSelection = true;
     if (state) {
       this.handlingSelectionChanged = true;
-      this.teiDocument.doScrollToID(record.id);
+      this.teiDocument.scrollToID(record.id);
       this.handlingSelectionChanged = false;
     }
     this.handlingSelection = false;

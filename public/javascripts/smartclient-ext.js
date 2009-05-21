@@ -58,7 +58,31 @@ isc.defineClass("BluffChart", isc.Canvas).addProperties({
 isc.Canvas.addProperties({
   selectNodes: function(xpath, namespaces) {
     return isc.XMLTools.selectNodes(this.getHandle(), xpath, namespaces) || [];
-  }
+  },
+
+  scrollToID: function(id, callback) {
+    var element = this.selectNodes("descendant::*[@id='" + id + "']").get(0);
+    if (element) this.scrollToElement(element, callback);
+  },
+
+  scrollToElement: function(element, callback) {
+    if (element.nodeType != 1 || !element.offsetWidth) {
+      // It's probably hidden ... try scrolling the previousSiblling, or the parent
+      if (element.previousSibling) {
+        this.scrollToElement(element.previousSibling);
+      } else if (element.parentNode) {
+        this.scrollToElement(element.parentNode);
+      }
+      return;
+    }
+
+    var scrollTo = isc.Element.getOffsetTop(element);
+
+    this.animateScroll(0, scrollTo, function(){
+      isc.Element.yellowFade(element);
+      if (callback) this.fireCallback(callback);
+    });
+  },
 });
 
 // A convenience method to find the first ancestor of a nativeTarget that
