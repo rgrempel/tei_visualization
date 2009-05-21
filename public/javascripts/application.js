@@ -588,10 +588,16 @@ isc.defineClass("ShowWindowButton", isc.ImgButton).addProperties({
 });
 
 isc.defineClass("AnalysisWindow", isc.Window).addProperties({
-  autoCenter: true,
   width: 800,
   height: 400,
   analysisPanel: null,
+
+  canDragReposition: true,
+  canDragResize: true,
+  keepInParentRect: true,
+  showFooter: true,
+  showMaximizeButton: true,
+  showResizer: true,
 
   closeClick: function() {
     this.markForDestroy();
@@ -729,6 +735,7 @@ isc.defineClass("AnalysisPanel", isc.Canvas).addClassProperties({
       analysisPanel: this,
       title: this.getMenuTitle()
     });
+    this.teiDocument.addChild(this.container);
     this.container.show();
     this.show(); // Needed when transitioning from TabSet
   },
