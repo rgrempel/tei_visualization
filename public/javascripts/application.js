@@ -131,6 +131,12 @@ isc.TEI.addProperties({
       height: "100%"
     });
 
+    this.documentArea.addChild(isc.HTMLPane.create({
+      height: "100%",
+      width: "100%",
+      contentsURL: "/about.html"
+    }));
+
     this.navigation = isc.VLayout.create({
       width: "100%",
       height: "100%",
