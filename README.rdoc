@@ -1,0 +1,150 @@
+== tei_visualization
+
+This is the source code to a website hosted at http://tei.pauldyck.com/ . The purpose of the
+web site is to provide a way to view TEI documents in an immersive, interactive environment.
+
+This software grew out of a course I taught with Paul Dyck at Canadian Mennonite University
+in 2008. We were teaching humanities students to encode literary texts in the TEI, and I wanted some
+way to let students visualize the results of their encoding ... in a sense, to get some
+payoff for the work they were putting in. (In addition to the pristine beauty of the XML
+itself, of course).
+
+There are, of course, a variety of ways to view TEI documents. One approach is to view the
+raw XML in a browser, with the help of the appropriate CSS styles. We did teach that, and it
+works well enough. However, I wanted to experiment with using Javascript to make the experien
+more interactive, and take better advantage of the relationships identified in the markup.
+
+There are ways of using Javascript with pure XML, and I experimented with that.
+However, many of the interactive features I was thinking of required maniuplating "style" attributes
+at run-time, which (as far as I could figure) doesn't actually change the appearance of anything
+when viewing pure XML in a browser. (That is, there is no attribute in pure XML which the browser
+recognizes as dynamically changing the appearance of the element).
+
+So, I needed a way to convert the TEI documents to HTML. One approach I experimented with was
+embedding the TEI document into an XHTML document, using the TEI namespace. Unfortunately, I didn't
+keep careful notes at that stage. My recollection is that there were two problems with that approach.
+One was that the Javascript frameworks I was using did not seem to be entirely functional with XHTML
+documents ... the obstacles did not appear to be insurmountable, but I recall running into bugs of
+various kinds. The other issue was (if I recall correctly) the style issue again ... the browsers
+would only give effect to run-time style modifications in the HTML namespace ... so it was not
+possible to treat the TEI-namespaced elements as first-class Javascript citizens.
+
+What I ended up doing, then, was using XSLT to transform the TEI document into an HTML equivalent.
+One can, of course, use sophisticated XSLT to achieve a variety of interesting transformations.
+However, I was mostly interested in experimenting with the Javascript side of things, so I opted
+for an (initially) simplistic XSLT transformation strategy. I simply turned all of the TEI tags
+into <div> tags, with a "class" attribute equal to the TEI tag name, and copied all of the TEI attributes.
+
+For example, <name key="mrsbennet" type="person"> would become <div class="name" key="mrsbennet" type="person">
+
+At that point, I could use CSS to get a first approximation of how the document should look. Aside
+from the usual formatting, it was (of course) necessary to hide some things completely (display: none) and
+make quite a few things inline (display: inline).
+
+The next question was how to add the Javascript interactivity I was looking for. I had previously
+done some programming with Prototype and Scriptaculous, and with ExtJS, but I thought this would be
+a good opportunity to learn jQuery, so I gave that a try. My approach at this stage was at least
+somewhat "unobtrusive" ... I used jQuery to cycle through the generated HTML and set up behaviours and
+user interface elements that seemed useful.
+
+The key issue that I ran into at that stage was that the
+various jQuery UI plugins available did not always work well with each other ... I was spending too
+much time trying to figure out interactions between plugins from different sources. Ultimately, I realized
+that I was not actually aiming for an unobtrusive Javascript experience ... I actually wanted something
+more "immersive" and application-like.
+
+So, I started again in ExtJS, which is an excellent framework for a more immersive approach. I implemented
+some initial features that made sense to me, and then the students and I started working interactively. I
+set up a WebDAV server for the students to upload files, and then set up a web site that would serve those
+files using the XSLT transformations and the Javascript UI I wrote.
+
+Each student was working on their own
+project, and part of their assignment was to think about how their text could be presented in a way that
+would be useful for scholarly purposes. We then worked iteratively ... the student would think of a feature,
+and we would talk about what kind of TEI markup would be needed to support that feature. Then the student
+would work on the markup, and I would work on the Javascript. Part of what we wanted to simulate was the
+experience of working with a programmer ... that is, identifying desired features (and bugs to fix), discussing
+them, and then seeing them implemented. In the end, every student came up with some feature that was
+uniquely suited to their particular document (though often useful for other TEI documents as well). I would
+say that about half of the features were student-driven and half my ideas.
+
+From a technical point of view, I wanted to do the computing in the browser, rather than on the server. If
+I recall correctly, my thinking was that I wanted the experience to be very fluid, so I wanted to avoid
+round-trips to the server as much as possible. The general architecture, then, was something like this:
+
+1. The HTML page was just an almost-empty shell that downloaded the necessary Javascript via <script> tags,
+   the necessary CSS, and had a reference to the URL of the TEI document.
+
+2. The Javascript used the usual Ajax techniques to download the TEI document, and kept a reference to it
+   in memory.
+
+3. To generate the bulk of the document as HTML, the Javascript ran an XSL transformation (as described
+   above), turning the TEI tags into <div>'s using the "class" attribute to signify the original TEI tag.
+
+4. The Javascript then used other XSL transformations to generate a table of contents, list of names,
+   index, etc., and organized these extra features in a user interface.
+
+The division of labour between the Javascript and the XSLT was very efficient from a programmer's perspective.
+Essentially, the XSLT did the work of understanding the TEI document, and the Javascript could then be the
+"glue" to implement a user interface on top of that. In some cases, the XSLT is essentially generating HTML that is fed into the HTML document in an appropriate
+part of the structure. In other cases, the XSLT is generating XML, which the Javascript is using a source of data for a more complex
+"widget". By using parameters to the XLT transformations, I could create a degree of interactivity. For instance,
+the context length for keywords-in-context transformations could be varied at run-time.
+
+One of the consequences of the client-side XSLT was that the software only works in Firefox. The reason is that
+Firefox has the best XSLT support currently, and I ended up wanting to use XSLT features that were only supported
+in Firefox.
+
+I was not at all sure whether the computing-in-browser approach would scale to large documents, but it did
+remarkably well, at least at the scale of the student projects. I have not yet identified at what point the
+size of the TEI document becomes unmanageable (it would, of course, vary depending on installed memory, and to a
+degree on CPU speed).
+
+At that point, I was not using any dynamic framework on the Web server side. However, when rewriting this
+for more general consumption, I have embedded it in a Rails application. The general architecture is still
+the same, with the computing in the browser. The only substantial work the Rails application does on the server
+is keep track of the TEI uploads themselves.
+
+I also switched Javascript frameworks, from ExtJS to SmartClient, when doing the rewrite. There was no particular
+problem with ExtJS that motivated this ... it was more that I wanted to give SmartClient a try, and this was
+a good opportunity. Ultimately, I do prefer SmartClient for a variety of reasons, but none of them are big
+reasons ... staying in ExtJS would have worked well too. It is likely that Dojo would have also worked well,
+but I haven't tried it yet.
+
+I plan to keep tinkering with this from time to time ... I've just scratched the surface of what would be
+possible. I expect we'll also use this again the next time we teach the course, and that will be an impetus
+for further development.
+
+One of the key issues that would need to be addressed in using something like this as a tool for viewing
+a large variety of TEI documents is the flexibility inherent in TEI customizations of one kind or another.
+The code here is largely aimed at the TEI-lite, with certain assumptions about encoding idioms and practices.
+This worked fine for class purposes (since those were the idioms and practices we were teaching), but there
+will be many TEI documents that this software doesn't handle well (I expect). I would have some interest
+in figuring out ways to deal with that, if there are people for whom that would be useful.
+
+== Licence
+
+The code that I've written here is subject to the MIT licence, as follows. 
+However, you should be aware that I'm using several libraries that are subject
+to their own licence provisions. Thus, you need to pay attention to the various
+licence-related files in the source code.
+
+Copyright (c) 2009 Ryan Rempel <rgrempel@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
