@@ -985,8 +985,9 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
     this.slider = isc.Slider.create({
       parent: this,
       minValue: 0,
-      maxValue: 100,
+      maxValue: 200,
       vertical: false,
+      labelWidth: 80,
       value: 60,
       title: "KWIC Length",
       timerMS: 200,
