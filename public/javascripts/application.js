@@ -145,6 +145,10 @@ isc.TEI.addProperties({
         this.documentArea
       ]
     });
+
+    if (!isc.Browser.isFirefox) {
+      isc.say("Note that this site only works properly in Firefox, because it uses XSLT features that only Firefox supports");
+    }
   },
 
   showDocumentList: function() {
