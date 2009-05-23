@@ -217,6 +217,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.setTitle(this.record.title);
     this.panelList = [];
     this.dataSources = {};
+    this.cssRules = isc.CSSRules.create();
 
     var self = this;
     this.getBoundDataSource(isc.TocTreeDataSource).fetchData(null, function(dsResponse, data) {
@@ -303,6 +304,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
   destroy: function() {
     delete this.dataSources;
     delete this.xmlDocument;
+    this.cssRules.destroy();
 
     return this.Super("destroy", arguments);
   },
@@ -952,6 +954,61 @@ isc.defineClass("KWICFlow", isc.XSLTFlow).addProperties({
   }
 });
 
+isc.defineClass("CSSRules").addProperties({
+  legalStyles: ["color", "backgroundColor"],
+
+  init: function() {
+    this.Super("init", arguments);
+
+    // cssRules is a cache of the actual rules in the actual stylesheet
+    this.cssRules = {};
+
+    var head = document.documentElement.firstChild;
+    var title = "Dynamic-Styles-" + new Date().getTime();
+    isc.Element.insertAdjacentHTML(head, "afterBegin", "<style type='text/css' title='" + title + "' />", true);
+
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      if (document.styleSheets[i].title == title) {
+        this.stylesheet = document.styleSheets[i];
+        break;
+      }
+    }
+
+    return this;
+  },
+
+  destroy: function() {
+    isc.Element.clear(this.stylesheet.ownerNode);
+    return this.Super("destroy", arguments);
+  },
+
+  setRule: function(selector, styles) {
+    var cssRule = this.cssRules[selector];
+
+    if (!cssRule) {
+      this.stylesheet.insertRule(selector + " {}", 0);
+      cssRule = this.cssRules[selector] = this.stylesheet.cssRules[0];
+    }
+
+    this.legalStyles.map(function(style) {
+      if (styles[style]) cssRule.style[style] = styles[style];
+    });
+
+    return selector;
+  },
+
+  getRule: function(selector) {
+    var result = {};
+    var rule = this.cssRules[selector];
+    if (rule) {
+      this.legalStyles.map(function(style) {
+        if (rule.style[style]) result[style] = rule.style[style];
+      });
+    }
+    return result;
+  }
+});
+
 isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
   teiDocument: null,
   gridConstructor: null,
@@ -970,7 +1027,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       parent: this,
       showResizeBar: true,
       selectionChanged: function(record, state) {
-        if (state) this.parent.setKey(record.key);
+        if (state) this.parent.handleGridSelection(record);
       }
     });
 
@@ -988,6 +1045,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       maxValue: 200,
       vertical: false,
       labelWidth: 80,
+      extraSpace: 10,
       value: 60,
       title: "KWIC Length",
       timerMS: 200,
@@ -998,6 +1056,22 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
         this.timerID = this.parent.delayCall("setKWICLength", [value], this.valueIsChanging() ? this.timerMS : 0);
       }
     });
+
+    this.cssForm = isc.DynamicForm.create({
+      creator: this,
+      numCols: 2,
+      layoutAlign: "center",
+      fields: [
+        {name: "color", title: "Colour", type: "color", defaultValue: "#000000", width: 85},
+        {name: "backgroundColor", title: "Background Colour", type: "color", defaultValue: "#FFFFFF", width: 85}
+      ],
+      itemChanged: function(item, newValue) {
+        this.Super("itemChanged", arguments);
+        this.creator.handleEditCSS(this.getValues());
+      }
+    });
+
+    this.observe(this.teiDocument.cssRules, "setRule", "observer.handleSetRule(returnVal)");
 
     this.addChild(
       isc.HLayout.create({
@@ -1010,12 +1084,48 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
             height: "100%",
             members: [
               this.kwic,
-              this.slider
+              isc.HLayout.create({
+                width: "100%",
+                members: [
+                  this.slider,
+                  this.cssForm
+                ]
+              })
             ]
           })
         ]
       })
     );
+  },
+
+  handleEditCSS: function(values) {
+    var record = this.grid.getSelectedRecord();
+    if (record) {
+      this.teiDocument.cssRules.setRule(this.selectorForRecord(record), values);
+    }
+  },
+
+  handleSetRule: function(selector) {
+    var record = this.grid.getSelectedRecord();
+    if (record && selector == this.selectorForRecord(record)) {
+      this.cssForm.editRecord(this.teiDocument.cssRules.getRule(selector));
+    }
+  },
+
+  selectorForRecord: function(record) {
+    // this is meant to be subclassed ...
+    return "";
+  },
+
+  handleGridSelection: function(record) {
+    this.setKey(record.key);
+    var selector = this.selectorForRecord(record);
+    var cssRecord = this.teiDocument.cssRules.getRule(selector);
+    if (cssRecord) {
+      this.cssForm.editRecord(cssRecord);
+    } else {
+      this.cssForm.editNewRecord();
+    }
   },
 
   setKey: function(key) {
@@ -1043,7 +1153,10 @@ isc.defineClass("NamesDialogPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Dialog KWIC",
   teiDocument: null,
   gridConstructor: "NamesGrid",
-  kwicXSLTName: "nameDialog"
+  kwicXSLTName: "nameDialog",
+  selectorForRecord: function(record) {
+    return "div.said[who='" + record.key + "']";
+  }
 });
 
 isc.defineClass("XSLTFlowPanel", isc.AnalysisPanel).addProperties({
@@ -1228,7 +1341,10 @@ isc.defineClass("IndexKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Index (KWIC)",
   teiDocument: null,
   gridConstructor: "IndexGrid",
-  kwicXSLTName: "indexKwic"
+  kwicXSLTName: "indexKwic",
+  selectorForRecord: function(record) {
+    return "div.p div.term[key='" + record.key + "']";
+  }
 });
 
 isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
@@ -1238,7 +1354,10 @@ isc.defineClass("NamesKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Names (KWIC)",
   teiDocument: null,
   gridConstructor: "NamesGrid",
-  kwicXSLTName: "nameKwic"
+  kwicXSLTName: "nameKwic",
+  selectorForRecord: function(record) {
+    return "div.name[key='" + record.key + "'], div.rs[key='" + record.key + "']";
+  }
 });
 
 isc.defineClass("InterpNamesPanel", isc.AnalysisPanel).addClassProperties({
@@ -1287,7 +1406,10 @@ isc.defineClass("InterpsKWICPanel", isc.KWICPanel).addClassProperties({
   menuTitle: "Interpretations (KWIC)",
   teiDocument: null,
   gridConstructor: "InterpsGrid",
-  kwicXSLTName: "interpretationKwic"
+  kwicXSLTName: "interpretationKwic",
+  selectorForRecord: function(record) {
+    return "div[ana~='#" + record.key + "']";
+  }
 });
 
 isc.defineClass("IndexDataSource", "XSLTDataSource").addProperties({

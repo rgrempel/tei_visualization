@@ -295,6 +295,11 @@
                 <xsl:value-of select="$id-prefix"/>
                 <xsl:apply-templates select="." mode="id"/>
             </xsl:attribute>
+            <xsl:if test="self::tei:term">
+                <xsl:attribute name="key">
+                    <xsl:value-of select="concat(count(ancestor::tei:index), ':', str:concat(ancestor::tei:index/tei:term))" />
+                </xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
         </div>
