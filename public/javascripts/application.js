@@ -1074,7 +1074,6 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
         {name: "backgroundColor", title: "Background Colour", type: "color", defaultValue: "#FFFFFF", width: 85}
       ],
       itemChanged: function(item, newValue) {
-        this.Super("itemChanged", arguments);
         this.creator.handleEditCSS(this.getValues());
       }
     });
