@@ -22,6 +22,8 @@ isc.TEI.addProperties({
 
     isc.TEI.app = this;
 
+    this.cssRules = isc.CSSRules.create();
+
     this.documentList = isc.DocumentList.create({
       align: "center",
       width: "100%",
@@ -217,7 +219,6 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
     this.setTitle(this.record.title);
     this.panelList = [];
     this.dataSources = {};
-    this.cssRules = isc.CSSRules.create();
 
     var self = this;
     this.getBoundDataSource(isc.TocTreeDataSource).fetchData(null, function(dsResponse, data) {
@@ -304,7 +305,7 @@ isc.defineClass("TEIDocument", isc.Window).addProperties({
   destroy: function() {
     delete this.dataSources;
     delete this.xmlDocument;
-    this.cssRules.destroy();
+    isc.TEI.app.cssRules.clearRules();
 
     return this.Super("destroy", arguments);
   },
@@ -964,7 +965,7 @@ isc.defineClass("CSSRules").addProperties({
     this.cssRules = {};
 
     var head = document.documentElement.firstChild;
-    var title = "Dynamic-Styles-" + new Date().getTime();
+    var title = "Dynamic-Styles";
     isc.Element.insertAdjacentHTML(head, "afterBegin", "<style type='text/css' title='" + title + "' />", true);
 
     for (var i = 0; i < document.styleSheets.length; i++) {
@@ -975,11 +976,6 @@ isc.defineClass("CSSRules").addProperties({
     }
 
     return this;
-  },
-
-  destroy: function() {
-    isc.Element.clear(this.stylesheet.ownerNode);
-    return this.Super("destroy", arguments);
   },
 
   setRule: function(selector, styles) {
@@ -1006,6 +1002,10 @@ isc.defineClass("CSSRules").addProperties({
       });
     }
     return result;
+  },
+
+  clearRules: function() {
+
   }
 });
 
@@ -1071,7 +1071,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
       }
     });
 
-    this.observe(this.teiDocument.cssRules, "setRule", "observer.handleSetRule(returnVal)");
+    this.observe(isc.TEI.app.cssRules, "setRule", "observer.handleSetRule(returnVal)");
 
     this.addChild(
       isc.HLayout.create({
@@ -1101,14 +1101,14 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
   handleEditCSS: function(values) {
     var record = this.grid.getSelectedRecord();
     if (record) {
-      this.teiDocument.cssRules.setRule(this.selectorForRecord(record), values);
+      isc.TEI.app.cssRules.setRule(this.selectorForRecord(record), values);
     }
   },
 
   handleSetRule: function(selector) {
     var record = this.grid.getSelectedRecord();
     if (record && selector == this.selectorForRecord(record)) {
-      this.cssForm.editRecord(this.teiDocument.cssRules.getRule(selector));
+      this.cssForm.editRecord(isc.TEI.app.cssRules.getRule(selector));
     }
   },
 
@@ -1120,7 +1120,7 @@ isc.defineClass("KWICPanel", isc.AnalysisPanel).addProperties({
   handleGridSelection: function(record) {
     this.setKey(record.key);
     var selector = this.selectorForRecord(record);
-    var cssRecord = this.teiDocument.cssRules.getRule(selector);
+    var cssRecord = isc.TEI.app.cssRules.getRule(selector);
     if (cssRecord) {
       this.cssForm.editRecord(cssRecord);
     } else {
