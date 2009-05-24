@@ -1537,6 +1537,7 @@ isc.defineClass("NewDocumentForm", isc.FileUploadForm).addProperties({
   showErrorText: true,
   dataSource: "documents",
   fields: [
+    {name: "body", type: "header", defaultValue: "Upload TEI Document"},
     {name: "original_url"},
     {name: "contents", type: "upload"},
     {name: "space", type: "spacer", height: 10},

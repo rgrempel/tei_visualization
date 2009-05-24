@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
               <data>You must login to view this item</data>
             </response>
           END
-          render :xml => response, :status => 403
+          render :xml => response
         end
 
         format.all do

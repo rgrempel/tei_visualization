@@ -3,10 +3,17 @@ class DocumentsController < ApplicationController
     data = params[:request][:data][:documents]
     @record = Document.new(data)
 
-    if @record.save
-      @status = 0
+    @scholar = current_scholar
+    if @scholar
+      @record.scholar_id = @scholar.id
+      if @record.save
+        @status = 0
+      else
+        @status = -4
+      end
     else
       @status = -4
+      @record.errors.add :body, "You must log in to upload a document"
     end
 
     render :template => "smartclient/show"
@@ -42,13 +49,38 @@ class DocumentsController < ApplicationController
   def destroy
     @record = Document.find params[:id]
     if @record
-      @record.destroy
-      @status = 0
+      if current_scholar
+        if current_scholar.administrator? || (current_scholar.id == @record.scholar_id)
+          @record.destroy
+          @status = 0
+          render :template => "smartclient/show"
+        else
+          response = <<-END
+            <response>
+              <status>-1</status>
+              <data>You are not allowed to delete this item</data>
+            </response>
+          END
+          render :xml => response
+        end
+      else
+        response = <<-END
+          <response>
+            <status>-1</status>
+            <data>You must log in to delete items</data>
+          </response>
+        END
+        render :xml => response
+      end
     else
-      @status = -1
+      response = <<-END
+        <response>
+          <status>-1</status>
+          <data>Item not found</data>
+        </response>
+      END
+      render :xml => response
     end
-
-    render :template => "smartclient/show"
   end
 
   def show
@@ -65,7 +97,19 @@ class DocumentsController < ApplicationController
   def upload
     @callback = params[:callback]
     @record = Document.new(params)
-    @status = @record.save ? 0 : -4
+
+    @scholar = current_scholar
+    if @scholar
+      @record.scholar_id = @scholar.id
+      if @record.save
+        @status = 0
+      else
+        @status = -4
+      end
+    else
+      @status = -4
+      @record.errors.add :body, "You must log in to upload a document"
+    end
 
     render :layout => false
   end
