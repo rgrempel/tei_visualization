@@ -160,7 +160,7 @@ class ScholarSessionsControllerTest < ActionController::TestCase
 
       assert_response :success
       assert_tag :status, :content => "-4"
-      assert_tag :errors, :child => {:tag => "email", :content => /not exist/}
+      assert_tag :errors, :child => {:tag => "email", :content => /not valid/}
       assert_nil @controller.session[:scholar_credentials]
     end
 
