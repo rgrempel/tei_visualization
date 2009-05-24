@@ -11,6 +11,7 @@
 #  contents_content_type :string(255)
 #  contents_file_size    :integer
 #  contents_updated_at   :datetime
+#  scholar_id            :integer
 #
 
 require File.join(File.dirname(__FILE__), '..', 'test_helper')

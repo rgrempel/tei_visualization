@@ -11,6 +11,7 @@
 #  contents_content_type :string(255)
 #  contents_file_size    :integer
 #  contents_updated_at   :datetime
+#  scholar_id            :integer
 #
 
 require 'nokogiri'
@@ -25,6 +26,8 @@ class Document < ActiveRecord::Base
                                :styles => {:original => {}},
                                :processors => [:TEI],
                                :whiny_thumbnails => true
+
+  belongs_to :scholar
 
   attr_accessible :original_url, :title, :contents
 

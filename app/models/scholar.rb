@@ -26,6 +26,8 @@
 class Scholar < ActiveRecord::Base
   sanitize_fields :only => [:email, :institution, :full_name]
 
+  has_many :documents
+
   acts_as_authentic do |c|
     c.perishable_token_valid_for 1.day
   end
