@@ -22,6 +22,8 @@ isc.TEI.addProperties({
 
     isc.TEI.app = this;
 
+    this.initAuthorization();
+
     this.cssRules = isc.CSSRules.create();
 
     this.documentList = isc.DocumentList.create({
@@ -143,7 +145,13 @@ isc.TEI.addProperties({
       width: "100%",
       height: "100%",
       members: [
-        this.menuBar,
+        isc.HLayout.create({
+          width: "100%",
+          members: [
+            this.menuBar,
+            isc.LoginButton.create()
+          ]
+        }),
         this.documentArea
       ]
     });

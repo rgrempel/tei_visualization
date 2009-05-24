@@ -19,7 +19,7 @@
     - %w( js-class excanvas bluff-min ).each do |js|
       = javascript_include_tag "/javascripts/Bluff/#{js}.js"
 
-    - %w( smartclient-ext xslt application ).each do |js|
+    - %w( smartclient-ext xslt application authorization ).each do |js|
       = javascript_include_tag "/javascripts/#{js}.js"
 
     = stylesheet_link_tag :all
