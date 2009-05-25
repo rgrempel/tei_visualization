@@ -12,6 +12,7 @@
 #  contents_file_size    :integer
 #  contents_updated_at   :datetime
 #  scholar_id            :integer
+#  allow_public          :boolean         default(TRUE)
 #
 
 require File.join(File.dirname(__FILE__), '..', 'test_helper')

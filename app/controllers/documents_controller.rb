@@ -32,6 +32,14 @@ class DocumentsController < ApplicationController
       @startRow = 0
     end
 
+    if !current_scholar
+      options[:conditions] = ["allow_public = TRUE"]
+    else
+      if !current_scholar.administrator?
+        options[:conditions] = ["allow_public = TRUE OR scholar_id = ?", current_scholar.id]
+      end
+    end
+
     @records = Document.find :all, options
 
     @status = 0
@@ -85,6 +93,15 @@ class DocumentsController < ApplicationController
 
   def show
     @record = Document.find params[:id]
+
+    if !current_scholar
+      @record = nil unless @record.allow_public?
+    else
+      if !current_scholar.administrator?
+        @record = nil unless (@record.allow_public? || @record.scholar_id == current_scholar.id)
+      end
+    end
+
     if @record
       respond_to do |format|
         format.tei do

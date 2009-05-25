@@ -12,6 +12,7 @@
 #  contents_file_size    :integer
 #  contents_updated_at   :datetime
 #  scholar_id            :integer
+#  allow_public          :boolean         default(TRUE)
 #
 
 require 'nokogiri'
@@ -29,7 +30,7 @@ class Document < ActiveRecord::Base
 
   belongs_to :scholar
 
-  attr_accessible :original_url, :title, :contents
+  attr_accessible :original_url, :title, :contents, :allow_public
 
   before_validation :download_from_original_url_if_necessary, :check_title
   

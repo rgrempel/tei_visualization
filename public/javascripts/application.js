@@ -1537,10 +1537,15 @@ isc.defineClass("NewDocumentForm", isc.FileUploadForm).addProperties({
   showErrorText: true,
   dataSource: "documents",
   fields: [
+    {type: "spacer", height: 10},
     {name: "body", type: "header", defaultValue: "Upload TEI Document"},
-    {name: "original_url"},
-    {name: "contents", type: "upload"},
-    {name: "space", type: "spacer", height: 10},
+    {type: "spacer", height: 10},
+    {name: "blurb", type: "blurb", wrap: true, defaultValue: "Either enter a complete URL where the document can be found, or upload a file from your own computer"},
+    {name: "original_url", width: 280},
+    {name: "contents", type: "upload", title: "File to Upload"},
+    {type: "spacer", height: 10},
+    {name: "allow_public"},
+    {type: "spacer", height: 10},
     {
       name: "submit",
       type: "button",
@@ -1563,8 +1568,9 @@ isc.RailsDataSource.create({
   dataURL: "/documents",
   fields: [
     {name: "id", type: "integer", primaryKey: true, canEdit: false},
-    {name: "original_url", type: "text", length: 255},
-    {name: "title", type: "text", length: 255}
+    {name: "original_url", type: "text", title: "Download from URL", length: 255},
+    {name: "title", type: "text", length: 255},
+    {name: "allow_public", type: "boolean", title: "Allow anyone to read", defaultValue: true}
   ]
 });
 
@@ -1579,8 +1585,7 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
       autoFetchData: true,
       selectionModel: "single",
       fields: [
-        {name: "title"},
-        {name: "original_url"}
+        {name: "title"}
       ],
       doOpenSelection: function() {
         isc.TEI.app.doOpenDocument (this.getSelectedRecord());
@@ -1598,6 +1603,9 @@ isc.defineClass("DocumentList", isc.VLayout).addProperties({
         isc.TEI.app.doOpenDocument(record);
       }
     });
+
+    this.grid.observe(isc.TEI.app, "fireLogin", "observer.invalidateCache()");
+    this.grid.observe(isc.TEI.app, "fireLogout", "observer.invalidateCache()");
 
     this.menuBar = isc.Toolbar.create({
       buttons: [

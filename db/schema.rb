@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090524145127) do
+ActiveRecord::Schema.define(:version => 20090525033350) do
 
   create_table "documents", :force => true do |t|
     t.string   "original_url"
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 20090524145127) do
     t.integer  "contents_file_size"
     t.datetime "contents_updated_at"
     t.integer  "scholar_id"
+    t.boolean  "allow_public",          :default => true
   end
 
   add_index "documents", ["scholar_id"], :name => "index_documents_on_scholar_id"
