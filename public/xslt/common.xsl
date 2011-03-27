@@ -26,6 +26,26 @@
     <xsl:variable name="UC" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
     <xsl:variable name="LC" select="'abcdefghijklmnopqrstuvwxyz'"/>
 
+    <!-- For graphics, use the image -->
+    <xsl:template match="tei:graphic">
+        <img src="{@url}" />
+        <xsl:if test="@width">
+            <xsl:attribute name="width">
+                <xsl:value-of select="@width" />
+            </xsl:attribute>
+        </xsl:if>
+        <xsl:if test="@height">
+            <xsl:attribute name="height">
+                <xsl:value-of select="@height" />
+            </xsl:attribute>
+        </xsl:if>
+        <xsl:if test="parent::*/child::tei:figDesc">
+            <xsl:attribute name="alt">
+                <xsl:value-of select="parent::*/child::tei:figDesc" />
+            </xsl:attribute>
+        </xsl:if>
+    </xsl:template>
+
     <!-- By default, we just copy and descend -->
     <xsl:template name="copy-and-descend" match="*">
         <div class="{local-name(.)}">
@@ -48,6 +68,14 @@
         <xsl:attribute name="id">
             <xsl:value-of select="$id-prefix"/>
             <xsl:value-of select="."/>
+        </xsl:attribute>
+    </xsl:template>
+
+    <!-- And rend, which we copy to style -->
+    <xsl:template match="@rend">
+        <xsl:copy />
+        <xsl:attribute name="style">
+            <xsl:value-of select="." />
         </xsl:attribute>
     </xsl:template>
 
